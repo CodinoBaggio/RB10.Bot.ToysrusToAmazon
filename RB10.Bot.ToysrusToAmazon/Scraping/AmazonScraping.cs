@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static RB10.Bot.ToysrusToAmazon.ExecutingStateEvent;
 using static RB10.Bot.ToysrusToAmazon.Scraping.ToysrusScraping;
 
 namespace RB10.Bot.ToysrusToAmazon.Scraping
@@ -19,6 +20,9 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         }
 
         public int Delay { get; set; }
+
+        public delegate void ExecutingStateEventHandler(object sender, ExecutingStateEventArgs e);
+        public event ExecutingStateEventHandler ExecutingStateChanged;
 
         public List<ToyInformation> Run(List<ToysrusScraping.ToyInformation> toysrusToyInformations)
         {
@@ -54,6 +58,21 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             }
 
             return ret;
+        }
+
+        protected void Notify(string info, string message, NotifyStatus reportState, ProcessStatus processState = ProcessStatus.Start)
+        {
+            if (ExecutingStateChanged != null)
+            {
+                var eventArgs = new ExecutingStateEventArgs()
+                {
+                    Info = info,
+                    Message = message,
+                    NotifyStatus = reportState,
+                    ProcessStatus = processState
+                };
+                ExecutingStateChanged.Invoke(this, eventArgs);
+            }
         }
     }
 }

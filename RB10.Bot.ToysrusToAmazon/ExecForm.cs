@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static RB10.Bot.ToysrusToAmazon.ExecutingStateEvent;
 
 namespace RB10.Bot.ToysrusToAmazon
 {
@@ -17,12 +18,12 @@ namespace RB10.Bot.ToysrusToAmazon
             public string ProcessStatus { get; set; }
             public string Status { get; set; }
             public string LogDate { get; set; }
-            public string JanCode { get; set; }
+            public string Info { get; set; }
             public string Message { get; set; }
         }
 
         private BindingList<Log> _logs { get; set; }
-        delegate void LogDelegate(string processStatus, string status, string janCode, string logDate, string message);
+        delegate void LogDelegate(string processStatus, string status, string info, string logDate, string message);
 
         public ExecForm()
         {
@@ -50,7 +51,7 @@ namespace RB10.Bot.ToysrusToAmazon
                 dataGridView1.Rows.Clear();
 
                 var task = new Scraping.ScrapingManager();
-                task.Start(dlg.FileName, (int)DelayNumericUpDown.Value);
+                task.Start(dlg.FileName, (int)DelayNumericUpDown.Value, (int)AmazonNumericUpDown.Value);
             }
             catch (ApplicationException ex)
             {
@@ -62,12 +63,12 @@ namespace RB10.Bot.ToysrusToAmazon
             }
         }
 
-        //private void Task_ExecutingStateChanged(object sender, ToysrusBot.ExecutingStateEventArgs e)
-        //{
-        //    Invoke(new LogDelegate(UpdateLog), e.ProcessStatus.ToString(), e.NotifyStatus.ToString(), e.JanCode, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), e.Message);
-        //}
+        private void Task_ExecutingStateChanged(object sender, ExecutingStateEventArgs e)
+        {
+            Invoke(new LogDelegate(UpdateLog), e.ProcessStatus.ToString(), e.NotifyStatus.ToString(), e.Info, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), e.Message);
+        }
 
-        private void UpdateLog(string processStatus, string status, string janCode, string logDate, string message)
+        private void UpdateLog(string processStatus, string status, string info, string logDate, string message)
         {
             if (_logs == null)
             {
@@ -75,7 +76,7 @@ namespace RB10.Bot.ToysrusToAmazon
                 dataGridView1.DataSource = _logs;
             }
 
-            var log = _logs.Where(x => x.JanCode == janCode);
+            var log = _logs.Where(x => x.Info == info);
             if(0 < log.Count())
             {
                 log.First().LogDate = logDate;
@@ -85,7 +86,7 @@ namespace RB10.Bot.ToysrusToAmazon
             }
             else
             {
-                _logs.Insert(0, new Log { ProcessStatus = processStatus, Status = status, LogDate = logDate, JanCode = janCode, Message = message });
+                _logs.Insert(0, new Log { ProcessStatus = processStatus, Status = status, LogDate = logDate, Info = info, Message = message });
             }
         }
 

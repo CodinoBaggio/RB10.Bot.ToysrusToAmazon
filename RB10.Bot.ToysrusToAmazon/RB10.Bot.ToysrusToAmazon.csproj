@@ -54,6 +54,7 @@
     <Compile Include="ExecForm.Designer.cs">
       <DependentUpon>ExecForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExecutingStateEvent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scraping\AmazonScraping.cs" />
