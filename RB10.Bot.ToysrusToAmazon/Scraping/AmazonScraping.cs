@@ -11,12 +11,11 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 {
     class AmazonScraping
     {
-        public class ToyInformation
+        public class ToyInformation : ToysrusScraping.ToyInformation
         {
-            public string ToyName { get; set; }
-            public int ToysrusPrice { get; set; }
             public string Asin { get; set; }
             public int AmazonPrice { get; set; }
+            public string AmazonImageUrl { get; set; }
         }
 
         public int Delay { get; set; }
@@ -43,7 +42,11 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
                 if (toy.asin != null && toysrusToyInformation.Price < toy.price)
                 {
-                    ret.Add(new ToyInformation { ToyName = toysrusToyInformation.ToyName, ToysrusPrice = toysrusToyInformation.Price, Asin = toy.asin, AmazonPrice = toy.price });
+                    ToyInformation toyInformation = (ToyInformation)toysrusToyInformation;
+                    toyInformation.Asin = toy.asin;
+                    toyInformation.AmazonPrice = toy.price;
+                    toyInformation.ImageUrl = toy.imageUrl;
+                    ret.Add(toyInformation);
                 }
             }
 
@@ -65,7 +68,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             }
         }
 
-        private (string asin, int price) GetAmazonUsingScraping(string toyName)
+        private (string asin, int price, string imageUrl) GetAmazonUsingScraping(string toyName)
         {
             var keyword = string.Join("+", toyName.Replace("　", " ").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
             string html = Utils.GetHtml($"https://www.amazon.co.jp/s/field-keywords={keyword}", Delay);
@@ -73,13 +76,15 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var doc = parser.Parse(html);
 
             var result = doc.GetElementById("result_0");
-            if (result == null) return (null, 0); ;
+            if (result == null) return (null, 0, null);
 
             var asin = result.GetAttribute("data-asin");
             var priceTag = result.GetElementsByClassName("a-price-whole").First() as AngleSharp.Dom.Html.IHtmlSpanElement;
             var price = priceTag != null ? Convert.ToInt32(priceTag.InnerHtml.Replace(@",", "")) : 0;
+            var image = result.GetElementsByClassName("s-access-image cfMarker").FirstOrDefault();
+            var imageElem = image as AngleSharp.Dom.Html.IHtmlImageElement;
 
-            return (asin, price);
+            return (asin, price, imageElem.Source);
         }
 
         private const string MY_AWS_ACCESS_KEY_ID = "";

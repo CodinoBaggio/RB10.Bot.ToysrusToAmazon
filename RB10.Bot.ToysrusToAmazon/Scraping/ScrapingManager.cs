@@ -10,29 +10,39 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 {
     class ScrapingManager
     {
+        public class Parameters
+        {
+            public string SaveFileName { get; set; }
+            public int ToysrusDelay { get; set; }
+            public int AmazonDelay { get; set; }
+            public string SearchKeyword { get; set; }
+            public List<string> TargetUrls { get; set; }
+            public Parameters() => TargetUrls = new List<string>();
+        }
+
         public delegate void ExecutingStateEventHandler(object sender, ExecutingStateEventArgs e);
         public event ExecutingStateEventHandler ExecutingStateChanged;
 
-        public void Start(string saveFileName, int toysrusDelay, int amzonDelay)
+        public void Start(Parameters parameters)
         {
-            Task.Run(() => Run(saveFileName, toysrusDelay, amzonDelay));
+            Task.Run(() => Run(parameters));
         }
 
-        public void Run(string saveFileName, int toysrusDelay, int amzonDelay)
+        public void Run(Parameters parameters)
         {
             Notify("処理開始", "処理を開始します。", NotifyStatus.Information, ProcessStatus.End);
 
             try
             {
                 // トイザらスから取得
-                var toysrus = new ToysrusScraping { Delay = toysrusDelay };
+                var toysrus = new ToysrusScraping { Delay = parameters.ToysrusDelay };
                 toysrus.ExecutingStateChanged += Scraping_ExecutingStateChanged;
-                var toysrusResult = toysrus.Run();
+                var toysrusResult = toysrus.Run(parameters.TargetUrls, parameters.SearchKeyword);
 
                 Notify("トイザらス取得完了", "トイザらスからの情報取得が完了しました。", NotifyStatus.Information, ProcessStatus.End);
 
                 // Amazonから取得
-                var amazon = new AmazonScraping { Delay = amzonDelay };
+                var amazon = new AmazonScraping { Delay = parameters.AmazonDelay };
                 amazon.ExecutingStateChanged += Scraping_ExecutingStateChanged;
                 List<ToyInformation> amazonResult = amazon.Run(toysrusResult);
 
@@ -40,15 +50,15 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
                 // ファイル出力
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine("JANコード,商品名,税込価格,オンライン在庫,店舗在庫あり,店舗在庫わずか,商品画像URL");
+                sb.AppendLine("トイザらスの商品ページのURL,トイザらスの商品名,トイザらスの税込価格,トイザらスのオンライン在庫,トイザらスの店舗在庫あり,トイザらスの店舗在庫わずか,トイザらスの商品画像URL,Asin,Amazonの税込価格,Amazonの商品画像のURL");
                 foreach (var result in amazonResult)
                 {
-                    sb.AppendLine($"{result.ToyName},{result.ToysrusPrice},{result.Asin},{result.AmazonPrice}");
+                    sb.AppendLine($"{result.Url},{result.ToyName},{result.Price},{result.OnlineStock},{result.StoreStockCount},{result.StoreLessStockCount},{result.ImageUrl},{result.Asin},{result.AmazonPrice},{result.AmazonImageUrl}");
                 }
 
                 if (0 < amazonResult.Count())
                 {
-                    System.IO.File.WriteAllText(saveFileName, sb.ToString(), Encoding.GetEncoding("shift-jis"));
+                    System.IO.File.WriteAllText(parameters.SaveFileName, sb.ToString(), Encoding.GetEncoding("shift-jis"));
 
                     Notify("結果ファイル出力完了", "結果ファイルの出力が完了しました。", NotifyStatus.Information, ProcessStatus.End);
                 }

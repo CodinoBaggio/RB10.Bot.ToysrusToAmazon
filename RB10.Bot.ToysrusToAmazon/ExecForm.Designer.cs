@@ -42,6 +42,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.SearchKeywordTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AmazonNumericUpDown)).BeginInit();
@@ -49,7 +52,7 @@
             // 
             // RunButton
             // 
-            this.RunButton.Location = new System.Drawing.Point(340, 23);
+            this.RunButton.Location = new System.Drawing.Point(814, 35);
             this.RunButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.RunButton.Name = "RunButton";
             this.RunButton.Size = new System.Drawing.Size(125, 34);
@@ -74,13 +77,13 @@
             this.Column2,
             this.Column1,
             this.Column3});
-            this.dataGridView1.Location = new System.Drawing.Point(2, 68);
+            this.dataGridView1.Location = new System.Drawing.Point(2, 118);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
             this.dataGridView1.RowTemplate.Height = 21;
-            this.dataGridView1.Size = new System.Drawing.Size(946, 534);
+            this.dataGridView1.Size = new System.Drawing.Size(946, 484);
             this.dataGridView1.TabIndex = 16;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             // 
@@ -126,7 +129,7 @@
             // 
             // DelayNumericUpDown
             // 
-            this.DelayNumericUpDown.Location = new System.Drawing.Point(149, 6);
+            this.DelayNumericUpDown.Location = new System.Drawing.Point(633, 12);
             this.DelayNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -145,7 +148,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 9);
+            this.label2.Location = new System.Drawing.Point(496, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(140, 18);
             this.label2.TabIndex = 19;
@@ -154,7 +157,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(219, 9);
+            this.label3.Location = new System.Drawing.Point(703, 15);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(80, 18);
             this.label3.TabIndex = 20;
@@ -162,7 +165,7 @@
             // 
             // AmazonNumericUpDown
             // 
-            this.AmazonNumericUpDown.Location = new System.Drawing.Point(133, 37);
+            this.AmazonNumericUpDown.Location = new System.Drawing.Point(617, 43);
             this.AmazonNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -181,7 +184,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(209, 39);
+            this.label1.Location = new System.Drawing.Point(693, 45);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 18);
             this.label1.TabIndex = 23;
@@ -190,7 +193,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 39);
+            this.label4.Location = new System.Drawing.Point(500, 45);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(120, 18);
             this.label4.TabIndex = 22;
@@ -198,7 +201,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(794, 23);
+            this.button1.Location = new System.Drawing.Point(758, 77);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(125, 34);
@@ -207,11 +210,40 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(12, 12);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(145, 26);
+            this.comboBox1.TabIndex = 25;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(163, 12);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(327, 26);
+            this.comboBox2.TabIndex = 26;
+            // 
+            // SearchKeywordTextBox
+            // 
+            this.SearchKeywordTextBox.Location = new System.Drawing.Point(12, 44);
+            this.SearchKeywordTextBox.Name = "SearchKeywordTextBox";
+            this.SearchKeywordTextBox.Size = new System.Drawing.Size(478, 25);
+            this.SearchKeywordTextBox.TabIndex = 27;
+            // 
             // ExecForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(951, 605);
+            this.Controls.Add(this.SearchKeywordTextBox);
+            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.AmazonNumericUpDown);
             this.Controls.Add(this.label1);
@@ -251,6 +283,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.TextBox SearchKeywordTextBox;
     }
 }
 

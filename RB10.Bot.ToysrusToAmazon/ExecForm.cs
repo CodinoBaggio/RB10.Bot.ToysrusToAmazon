@@ -22,6 +22,12 @@ namespace RB10.Bot.ToysrusToAmazon
             public string Message { get; set; }
         }
 
+        public class Store
+        {
+            public string StoreName { get; set; }
+            public string Url { get; set; }
+        }
+
         private BindingList<Log> _logs { get; set; }
         delegate void LogDelegate(string processStatus, string status, string info, string logDate, string message);
 
@@ -36,6 +42,9 @@ namespace RB10.Bot.ToysrusToAmazon
             System.Type dgvtype = typeof(DataGridView);
             System.Reflection.PropertyInfo dgvPropertyInfo = dgvtype.GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             dgvPropertyInfo.SetValue(dataGridView1, true, null);
+
+            comboBox1.DataSource = Scraping.ToysrusScraping.GetCategories();
+            comboBox1.DisplayMember = "StoreName";
         }
 
         private void RunButton_Click(object sender, EventArgs e)
@@ -50,8 +59,17 @@ namespace RB10.Bot.ToysrusToAmazon
 
                 dataGridView1.Rows.Clear();
 
+                var parameters = new Scraping.ScrapingManager.Parameters
+                {
+                    SaveFileName = dlg.FileName,
+                    ToysrusDelay = (int)DelayNumericUpDown.Value,
+                    AmazonDelay = (int)AmazonNumericUpDown.Value,
+                    SearchKeyword = SearchKeywordTextBox.Text,
+                };
+                parameters.TargetUrls.AddRange((comboBox2.SelectedItem as Scraping.ToysrusScraping.Category).Urls.ToList());
+
                 var task = new Scraping.ScrapingManager();
-                task.Start(dlg.FileName, (int)DelayNumericUpDown.Value, (int)AmazonNumericUpDown.Value);
+                task.Start(parameters);
             }
             catch (ApplicationException ex)
             {
@@ -77,7 +95,7 @@ namespace RB10.Bot.ToysrusToAmazon
             }
 
             var log = _logs.Where(x => x.Info == info);
-            if(0 < log.Count())
+            if (0 < log.Count())
             {
                 log.First().LogDate = logDate;
                 log.First().Message = message;
@@ -127,8 +145,8 @@ namespace RB10.Bot.ToysrusToAmazon
             }
         }
 
-        private const string MY_AWS_ACCESS_KEY_ID = "AKIAIW5VMOY47U46SOHA";
-        private const string MY_AWS_SECRET_KEY = "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";
+        private const string MY_AWS_ACCESS_KEY_ID = "";
+        private const string MY_AWS_SECRET_KEY = "";
         private const string DESTINATION = "ecs.amazonaws.jp";
         private const string ASSOCIATE_TAG = "baggio10cod02-22"; //今回は未指定でOKです。
 
@@ -157,6 +175,12 @@ namespace RB10.Bot.ToysrusToAmazon
             var qqq = OfferSummary.Element(ex + "LowestNewPrice").Element(ex + "Amount");
 
 
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            comboBox2.DataSource = (comboBox1.SelectedValue as Scraping.ToysrusScraping.Store).Categories;
+            comboBox2.DisplayMember = "CategoryName";
         }
     }
 }
