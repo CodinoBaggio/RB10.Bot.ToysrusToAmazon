@@ -36,7 +36,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 amazon.ExecutingStateChanged += Scraping_ExecutingStateChanged;
                 List<ToyInformation> amazonResult = amazon.Run(toysrusResult);
 
-                Notify("Amzon取得完了", "Amzonからの情報取得が完了しました。", NotifyStatus.Information, ProcessStatus.End);
+                Notify("Amazon取得完了", "Amazonからの情報取得が完了しました。", NotifyStatus.Information, ProcessStatus.End);
 
                 // ファイル出力
                 StringBuilder sb = new StringBuilder();
@@ -65,7 +65,10 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         private void Scraping_ExecutingStateChanged(object sender, ExecutingStateEventArgs e)
         {
-            Notify(e);
+            if (ExecutingStateChanged != null)
+            {
+                ExecutingStateChanged.Invoke(this, e);
+            }
         }
 
         protected void Notify(string info, string message, NotifyStatus reportState, ProcessStatus processState = ProcessStatus.Start)
@@ -80,14 +83,6 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     ProcessStatus = processState
                 };
                 ExecutingStateChanged.Invoke(this, eventArgs);
-            }
-        }
-
-        private void Notify(ExecutingStateEventArgs e)
-        {
-            if (ExecutingStateChanged != null)
-            {
-                ExecutingStateChanged.Invoke(this, e);
             }
         }
     }

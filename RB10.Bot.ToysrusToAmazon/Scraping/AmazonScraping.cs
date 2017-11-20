@@ -39,21 +39,11 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             List<ToyInformation> ret = new List<ToyInformation>();
             foreach (var toysrusToyInformation in toysrusToyInformations)
             {
-                var keyWord = string.Join("+", toysrusToyInformation.ToyName.Replace("　", " ").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
-                string html = Utils.GetHtml($"https://www.amazon.co.jp/s/field-keywords={keyWord}", Delay);
-                var parser = new HtmlParser();
-                var doc = parser.Parse(html);
+                var toy = GetAmazonUsingScraping(toysrusToyInformation.ToyName);
 
-                var result = doc.GetElementById("result_0");
-                if (result == null) continue;
-
-                var asin = result.GetAttribute("data-asin");
-                var priceTag = result.GetElementsByClassName("a-price-whole").First() as AngleSharp.Dom.Html.IHtmlSpanElement;
-                var price = Convert.ToInt32(priceTag.InnerHtml.Replace(@",", ""));
-
-                if (toysrusToyInformation.Price < price)
+                if (toy.asin != null && toysrusToyInformation.Price < toy.price)
                 {
-                    ret.Add(new ToyInformation { ToyName = toysrusToyInformation.ToyName, ToysrusPrice = toysrusToyInformation.Price, Asin = asin, AmazonPrice = price });
+                    ret.Add(new ToyInformation { ToyName = toysrusToyInformation.ToyName, ToysrusPrice = toysrusToyInformation.Price, Asin = toy.asin, AmazonPrice = toy.price });
                 }
             }
 
@@ -75,33 +65,68 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             }
         }
 
+        private (string asin, int price) GetAmazonUsingScraping(string toyName)
+        {
+            var keyword = string.Join("+", toyName.Replace("　", " ").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+            string html = Utils.GetHtml($"https://www.amazon.co.jp/s/field-keywords={keyword}", Delay);
+            var parser = new HtmlParser();
+            var doc = parser.Parse(html);
+
+            var result = doc.GetElementById("result_0");
+            if (result == null) return (null, 0); ;
+
+            var asin = result.GetAttribute("data-asin");
+            var priceTag = result.GetElementsByClassName("a-price-whole").First() as AngleSharp.Dom.Html.IHtmlSpanElement;
+            var price = priceTag != null ? Convert.ToInt32(priceTag.InnerHtml.Replace(@",", "")) : 0;
+
+            return (asin, price);
+        }
+
         private const string MY_AWS_ACCESS_KEY_ID = "AKIAIW5VMOY47U46SOHA";
         private const string MY_AWS_SECRET_KEY = "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";
         private const string DESTINATION = "ecs.amazonaws.jp";
         private const string ASSOCIATE_TAG = "baggio10cod02-22";
 
-        private void GetAmazon(string keyword)
+        private (string asin, int price) GetAmazonUsingAPI(string toyName)
         {
-            var helper = new Helper.SignedRequestHelper(MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_KEY, DESTINATION, ASSOCIATE_TAG);
-
-            IDictionary<string, string> request = new Dictionary<string, String>
+            try
             {
-                ["Service"] = "AWSECommerceService",
-                ["Operation"] = "ItemSearch",
-                ["SearchIndex"] = "All",
-                ["ResponseGroup"] = "Medium",
-                ["Keywords"] = keyword
-            };
-            var requestUrl = helper.Sign(request);
-            System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
+                var keyword = toyName.Replace("　", " ");
+                var helper = new Helper.SignedRequestHelper(MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_KEY, DESTINATION, ASSOCIATE_TAG);
 
-            System.Xml.Linq.XNamespace ex = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
-            var query = xml.Descendants(ex + "Item");
+                IDictionary<string, string> request = new Dictionary<string, String>
+                {
+                    ["Service"] = "AWSECommerceService",
+                    ["Operation"] = "ItemSearch",
+                    ["SearchIndex"] = "All",
+                    ["ResponseGroup"] = "Medium",
+                    ["Keywords"] = keyword
+                };
+                var requestUrl = helper.Sign(request);
+                System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
 
-            var elem = query.First();
-            var asin = elem.Element(ex + "ASIN");
-            var offerSummary = elem.Element(ex + "OfferSummary");
-            var price = offerSummary.Element(ex + "LowestNewPrice").Element(ex + "Amount");
+                System.Xml.Linq.XNamespace ns = xml.Root.Name.Namespace;
+                var errorMessageNodes = xml.Descendants(ns + "Message").ToList();
+                if (errorMessageNodes.Any())
+                {
+                    var message = errorMessageNodes[0].Value;
+                    return (null, 0);
+                }
+                var item = xml.Descendants(ns + "Item").FirstOrDefault();
+                var asin = item?.Descendants(ns + "ASIN").FirstOrDefault()?.Value;
+                var offerSummary = item?.Descendants(ns + "OfferSummary").FirstOrDefault();
+                var price = offerSummary?.Descendants(ns + "LowestNewPrice").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
+
+                return (asin, price != null ? Convert.ToInt32(price) : 0);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                Task.Delay(Delay).Wait();
+            }
         }
     }
 }
