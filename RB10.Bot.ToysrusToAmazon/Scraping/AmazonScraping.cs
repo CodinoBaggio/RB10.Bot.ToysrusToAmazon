@@ -74,5 +74,34 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 ExecutingStateChanged.Invoke(this, eventArgs);
             }
         }
+
+        private const string MY_AWS_ACCESS_KEY_ID = "AKIAIW5VMOY47U46SOHA";
+        private const string MY_AWS_SECRET_KEY = "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";
+        private const string DESTINATION = "ecs.amazonaws.jp";
+        private const string ASSOCIATE_TAG = "baggio10cod02-22";
+
+        private void GetAmazon(string keyword)
+        {
+            var helper = new Helper.SignedRequestHelper(MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_KEY, DESTINATION, ASSOCIATE_TAG);
+
+            IDictionary<string, string> request = new Dictionary<string, String>
+            {
+                ["Service"] = "AWSECommerceService",
+                ["Operation"] = "ItemSearch",
+                ["SearchIndex"] = "All",
+                ["ResponseGroup"] = "Medium",
+                ["Keywords"] = keyword
+            };
+            var requestUrl = helper.Sign(request);
+            System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
+
+            System.Xml.Linq.XNamespace ex = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
+            var query = xml.Descendants(ex + "Item");
+
+            var elem = query.First();
+            var asin = elem.Element(ex + "ASIN");
+            var offerSummary = elem.Element(ex + "OfferSummary");
+            var price = offerSummary.Element(ex + "LowestNewPrice").Element(ex + "Amount");
+        }
     }
 }

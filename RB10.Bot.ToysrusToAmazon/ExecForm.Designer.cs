@@ -30,17 +30,18 @@
         {
             this.RunButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.DelayNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.Column5 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DelayNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.AmazonNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AmazonNumericUpDown)).BeginInit();
@@ -83,42 +84,6 @@
             this.dataGridView1.TabIndex = 16;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             // 
-            // DelayNumericUpDown
-            // 
-            this.DelayNumericUpDown.Location = new System.Drawing.Point(149, 6);
-            this.DelayNumericUpDown.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.DelayNumericUpDown.Name = "DelayNumericUpDown";
-            this.DelayNumericUpDown.Size = new System.Drawing.Size(72, 25);
-            this.DelayNumericUpDown.TabIndex = 18;
-            this.DelayNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.DelayNumericUpDown.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(140, 18);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "トイザらスの取得間隔を";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(219, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(80, 18);
-            this.label3.TabIndex = 20;
-            this.label3.Text = "ミリ秒にする";
-            // 
             // Column5
             // 
             this.Column5.DataPropertyName = "ProcessStatus";
@@ -159,6 +124,42 @@
             this.Column3.ReadOnly = true;
             this.Column3.Width = 480;
             // 
+            // DelayNumericUpDown
+            // 
+            this.DelayNumericUpDown.Location = new System.Drawing.Point(149, 6);
+            this.DelayNumericUpDown.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.DelayNumericUpDown.Name = "DelayNumericUpDown";
+            this.DelayNumericUpDown.Size = new System.Drawing.Size(72, 25);
+            this.DelayNumericUpDown.TabIndex = 18;
+            this.DelayNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.DelayNumericUpDown.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(140, 18);
+            this.label2.TabIndex = 19;
+            this.label2.Text = "トイザらスの取得間隔を";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(219, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(80, 18);
+            this.label3.TabIndex = 20;
+            this.label3.Text = "ミリ秒にする";
+            // 
             // AmazonNumericUpDown
             // 
             this.AmazonNumericUpDown.Location = new System.Drawing.Point(133, 37);
@@ -195,11 +196,23 @@
             this.label4.TabIndex = 22;
             this.label4.Text = "Amzonの取得間隔を";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(794, 23);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(125, 34);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "実行";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // ExecForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(951, 605);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.AmazonNumericUpDown);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label4);
@@ -237,6 +250,7 @@
         private System.Windows.Forms.NumericUpDown AmazonNumericUpDown;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button1;
     }
 }
 

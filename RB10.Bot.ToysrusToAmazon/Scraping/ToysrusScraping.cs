@@ -130,5 +130,27 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 ExecutingStateChanged.Invoke(this, eventArgs);
             }
         }
+
+        public static List<string> GetCategories(string url, int delay)
+        {
+            string html = Utils.GetHtml(url, delay);
+            var parser = new HtmlParser();
+            var doc = parser.Parse(html);
+
+            // カテゴリーのURL取得
+            List<string> urls = new List<string>();
+            var categoryLinks = doc.GetElementsByClassName("with-link-02");
+            foreach (var item in categoryLinks)
+            {
+                var categoryLink = item as AngleSharp.Dom.Html.IHtmlAnchorElement;
+
+                if (categoryLink != null && !categoryLink.Href.StartsWith("https://www.toysrus.co.jp/f/") && !categoryLink.Href.StartsWith("https://www.toysrus.co.jp/cat"))
+                {
+                    urls.Add(categoryLink.Href);
+                }
+            }
+
+            return urls;
+        }
     }
 }
