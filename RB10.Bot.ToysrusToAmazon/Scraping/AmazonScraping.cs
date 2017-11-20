@@ -82,8 +82,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             return (asin, price);
         }
 
-        private const string MY_AWS_ACCESS_KEY_ID = "AKIAIW5VMOY47U46SOHA";
-        private const string MY_AWS_SECRET_KEY = "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";
+        private const string MY_AWS_ACCESS_KEY_ID = "";
+        private const string MY_AWS_SECRET_KEY = "";
         private const string DESTINATION = "ecs.amazonaws.jp";
         private const string ASSOCIATE_TAG = "baggio10cod02-22";
 
