@@ -145,7 +145,7 @@
             // 
             // AmazonNumericUpDown
             // 
-            this.AmazonNumericUpDown.Location = new System.Drawing.Point(617, 43);
+            this.AmazonNumericUpDown.Location = new System.Drawing.Point(624, 43);
             this.AmazonNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -164,7 +164,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(693, 45);
+            this.label1.Location = new System.Drawing.Point(700, 45);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 18);
             this.label1.TabIndex = 9;
@@ -175,9 +175,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(500, 45);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(120, 18);
+            this.label4.Size = new System.Drawing.Size(127, 18);
             this.label4.TabIndex = 7;
-            this.label4.Text = "Amzonの取得間隔を";
+            this.label4.Text = "Amazonの取得間隔を";
             // 
             // comboBox1
             // 
