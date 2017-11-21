@@ -20,12 +20,6 @@ namespace RB10.Bot.ToysrusToAmazon
             public string Message { get; set; }
         }
 
-        public class Store
-        {
-            public string StoreName { get; set; }
-            public string Url { get; set; }
-        }
-
         private BindingList<Log> _logs { get; set; }
         delegate void LogDelegate(string processStatus, string logDate, string message);
 
