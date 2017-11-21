@@ -43,6 +43,7 @@
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AmazonNumericUpDown)).BeginInit();
@@ -54,7 +55,7 @@
             this.RunButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.RunButton.Name = "RunButton";
             this.RunButton.Size = new System.Drawing.Size(125, 34);
-            this.RunButton.TabIndex = 0;
+            this.RunButton.TabIndex = 10;
             this.RunButton.Text = "実行";
             this.RunButton.UseVisualStyleBackColor = true;
             this.RunButton.Click += new System.EventHandler(this.RunButton_Click);
@@ -80,7 +81,7 @@
             this.dataGridView1.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
             this.dataGridView1.RowTemplate.Height = 21;
             this.dataGridView1.Size = new System.Drawing.Size(946, 526);
-            this.dataGridView1.TabIndex = 16;
+            this.dataGridView1.TabIndex = 11;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             // 
             // DelayNumericUpDown
@@ -93,7 +94,7 @@
             0});
             this.DelayNumericUpDown.Name = "DelayNumericUpDown";
             this.DelayNumericUpDown.Size = new System.Drawing.Size(72, 25);
-            this.DelayNumericUpDown.TabIndex = 18;
+            this.DelayNumericUpDown.TabIndex = 5;
             this.DelayNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.DelayNumericUpDown.Value = new decimal(new int[] {
             1000,
@@ -107,7 +108,7 @@
             this.label2.Location = new System.Drawing.Point(496, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(140, 18);
-            this.label2.TabIndex = 19;
+            this.label2.TabIndex = 4;
             this.label2.Text = "トイザらスの取得間隔を";
             // 
             // label3
@@ -116,7 +117,7 @@
             this.label3.Location = new System.Drawing.Point(703, 15);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(80, 18);
-            this.label3.TabIndex = 20;
+            this.label3.TabIndex = 6;
             this.label3.Text = "ミリ秒にする";
             // 
             // AmazonNumericUpDown
@@ -129,7 +130,7 @@
             0});
             this.AmazonNumericUpDown.Name = "AmazonNumericUpDown";
             this.AmazonNumericUpDown.Size = new System.Drawing.Size(72, 25);
-            this.AmazonNumericUpDown.TabIndex = 21;
+            this.AmazonNumericUpDown.TabIndex = 8;
             this.AmazonNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.AmazonNumericUpDown.Value = new decimal(new int[] {
             1000,
@@ -143,7 +144,7 @@
             this.label1.Location = new System.Drawing.Point(693, 45);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 18);
-            this.label1.TabIndex = 23;
+            this.label1.TabIndex = 9;
             this.label1.Text = "ミリ秒にする";
             // 
             // label4
@@ -152,7 +153,7 @@
             this.label4.Location = new System.Drawing.Point(500, 45);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(120, 18);
-            this.label4.TabIndex = 22;
+            this.label4.TabIndex = 7;
             this.label4.Text = "Amzonの取得間隔を";
             // 
             // button1
@@ -161,7 +162,7 @@
             this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(84, 24);
-            this.button1.TabIndex = 24;
+            this.button1.TabIndex = 12;
             this.button1.Text = "デバッグ";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Visible = false;
@@ -174,7 +175,7 @@
             this.comboBox1.Location = new System.Drawing.Point(12, 12);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(145, 26);
-            this.comboBox1.TabIndex = 25;
+            this.comboBox1.TabIndex = 0;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // comboBox2
@@ -184,14 +185,14 @@
             this.comboBox2.Location = new System.Drawing.Point(163, 12);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(327, 26);
-            this.comboBox2.TabIndex = 26;
+            this.comboBox2.TabIndex = 1;
             // 
             // SearchKeywordTextBox
             // 
-            this.SearchKeywordTextBox.Location = new System.Drawing.Point(12, 44);
+            this.SearchKeywordTextBox.Location = new System.Drawing.Point(74, 44);
             this.SearchKeywordTextBox.Name = "SearchKeywordTextBox";
-            this.SearchKeywordTextBox.Size = new System.Drawing.Size(478, 25);
-            this.SearchKeywordTextBox.TabIndex = 27;
+            this.SearchKeywordTextBox.Size = new System.Drawing.Size(416, 25);
+            this.SearchKeywordTextBox.TabIndex = 3;
             // 
             // Column4
             // 
@@ -217,11 +218,21 @@
             this.Column3.ReadOnly = true;
             this.Column3.Width = 480;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 47);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 18);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "検索条件";
+            // 
             // ExecForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(951, 605);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.SearchKeywordTextBox);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.comboBox1);
@@ -265,6 +276,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.Label label5;
     }
 }
 
