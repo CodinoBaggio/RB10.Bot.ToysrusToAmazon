@@ -73,13 +73,13 @@
             this.Column4,
             this.Column2,
             this.Column3});
-            this.dataGridView1.Location = new System.Drawing.Point(2, 118);
+            this.dataGridView1.Location = new System.Drawing.Point(2, 76);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
             this.dataGridView1.RowTemplate.Height = 21;
-            this.dataGridView1.Size = new System.Drawing.Size(946, 484);
+            this.dataGridView1.Size = new System.Drawing.Size(946, 526);
             this.dataGridView1.TabIndex = 16;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             // 
@@ -157,13 +157,14 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(758, 77);
+            this.button1.Location = new System.Drawing.Point(855, 3);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(125, 34);
+            this.button1.Size = new System.Drawing.Size(84, 24);
             this.button1.TabIndex = 24;
-            this.button1.Text = "実行";
+            this.button1.Text = "デバッグ";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // comboBox1
