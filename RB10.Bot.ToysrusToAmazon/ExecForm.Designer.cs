@@ -30,19 +30,18 @@
         {
             this.RunButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DelayNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.AmazonNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.SearchKeywordTextBox = new System.Windows.Forms.TextBox();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).BeginInit();
@@ -83,6 +82,30 @@
             this.dataGridView1.Size = new System.Drawing.Size(946, 526);
             this.dataGridView1.TabIndex = 11;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
+            // 
+            // Column4
+            // 
+            this.Column4.DataPropertyName = "ProcessStatus";
+            this.Column4.HeaderText = "ステータス";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Width = 150;
+            // 
+            // Column2
+            // 
+            this.Column2.DataPropertyName = "LogDate";
+            this.Column2.HeaderText = "日時";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 150;
+            // 
+            // Column3
+            // 
+            this.Column3.DataPropertyName = "Message";
+            this.Column3.HeaderText = "メッセージ";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 480;
             // 
             // DelayNumericUpDown
             // 
@@ -156,18 +179,6 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "Amzonの取得間隔を";
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(855, 3);
-            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(84, 24);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "デバッグ";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // comboBox1
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -194,30 +205,6 @@
             this.SearchKeywordTextBox.Size = new System.Drawing.Size(416, 25);
             this.SearchKeywordTextBox.TabIndex = 3;
             // 
-            // Column4
-            // 
-            this.Column4.DataPropertyName = "ProcessStatus";
-            this.Column4.HeaderText = "ステータス";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            this.Column4.Width = 150;
-            // 
-            // Column2
-            // 
-            this.Column2.DataPropertyName = "LogDate";
-            this.Column2.HeaderText = "日時";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 150;
-            // 
-            // Column3
-            // 
-            this.Column3.DataPropertyName = "Message";
-            this.Column3.HeaderText = "メッセージ";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Width = 480;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -236,7 +223,6 @@
             this.Controls.Add(this.SearchKeywordTextBox);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.AmazonNumericUpDown);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label4);
@@ -269,7 +255,6 @@
         private System.Windows.Forms.NumericUpDown AmazonNumericUpDown;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.TextBox SearchKeywordTextBox;

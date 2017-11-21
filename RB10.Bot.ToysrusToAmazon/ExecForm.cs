@@ -114,38 +114,6 @@ namespace RB10.Bot.ToysrusToAmazon
             }
         }
 
-        private const string MY_AWS_ACCESS_KEY_ID = "";
-        private const string MY_AWS_SECRET_KEY = "";
-        private const string DESTINATION = "ecs.amazonaws.jp";
-        private const string ASSOCIATE_TAG = "baggio10cod02-22"; //今回は未指定でOKです。
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            var helper = new Helper.SignedRequestHelper(MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_KEY, DESTINATION, ASSOCIATE_TAG);
-
-            var keyword = "ニンテンドー スイッチ 本体";
-
-            IDictionary<string, string> request = new Dictionary<string, String>();
-            request["Service"] = "AWSECommerceService";
-            request["Operation"] = "ItemSearch";
-            request["SearchIndex"] = "All";
-            request["ResponseGroup"] = "Medium";
-            request["Keywords"] = keyword;
-            var requestUrl = helper.Sign(request);
-            System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
-
-
-            System.Xml.Linq.XNamespace ex = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
-            var query = xml.Descendants(ex + "Item");
-
-            var elem = query.First();
-            var asin = elem.Element(ex + "ASIN");
-            var OfferSummary = elem.Element(ex + "OfferSummary");
-            var qqq = OfferSummary.Element(ex + "LowestNewPrice").Element(ex + "Amount");
-
-
-        }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             comboBox2.DataSource = (comboBox1.SelectedValue as Scraping.ToysrusScraping.Store).Categories;
