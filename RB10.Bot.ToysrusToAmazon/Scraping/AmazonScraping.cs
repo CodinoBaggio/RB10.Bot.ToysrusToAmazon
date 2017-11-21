@@ -85,6 +85,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             return (asin, price, imageElem.Source);
         }
 
+        #region AmazonAPI
+
         private const string MY_AWS_ACCESS_KEY_ID = "";
         private const string MY_AWS_SECRET_KEY = "";
         private const string DESTINATION = "ecs.amazonaws.jp";
@@ -131,5 +133,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 Task.Delay(Delay).Wait();
             }
         }
+
+        #endregion
     }
 }
