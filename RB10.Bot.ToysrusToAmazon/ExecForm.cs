@@ -16,9 +16,7 @@ namespace RB10.Bot.ToysrusToAmazon
         private class Log
         {
             public string ProcessStatus { get; set; }
-            public string Status { get; set; }
             public string LogDate { get; set; }
-            public string Info { get; set; }
             public string Message { get; set; }
         }
 
@@ -29,7 +27,7 @@ namespace RB10.Bot.ToysrusToAmazon
         }
 
         private BindingList<Log> _logs { get; set; }
-        delegate void LogDelegate(string processStatus, string status, string info, string logDate, string message);
+        delegate void LogDelegate(string processStatus, string logDate, string message);
 
         public ExecForm()
         {
@@ -69,6 +67,7 @@ namespace RB10.Bot.ToysrusToAmazon
                 parameters.TargetUrls.AddRange((comboBox2.SelectedItem as Scraping.ToysrusScraping.Category).Urls.ToList());
 
                 var task = new Scraping.ScrapingManager();
+                task.ExecutingStateChanged += Task_ExecutingStateChanged;
                 task.Start(parameters);
             }
             catch (ApplicationException ex)
@@ -83,10 +82,10 @@ namespace RB10.Bot.ToysrusToAmazon
 
         private void Task_ExecutingStateChanged(object sender, ExecutingStateEventArgs e)
         {
-            Invoke(new LogDelegate(UpdateLog), e.ProcessStatus.ToString(), e.NotifyStatus.ToString(), e.Info, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), e.Message);
+            Invoke(new LogDelegate(UpdateLog), e.NotifyStatus.ToString(), e.ExecDate, e.Message);
         }
 
-        private void UpdateLog(string processStatus, string status, string info, string logDate, string message)
+        private void UpdateLog(string processStatus, string logDate, string message)
         {
             if (_logs == null)
             {
@@ -94,18 +93,7 @@ namespace RB10.Bot.ToysrusToAmazon
                 dataGridView1.DataSource = _logs;
             }
 
-            var log = _logs.Where(x => x.Info == info);
-            if (0 < log.Count())
-            {
-                log.First().LogDate = logDate;
-                log.First().Message = message;
-                log.First().ProcessStatus = processStatus;
-                log.First().Status = status;
-            }
-            else
-            {
-                _logs.Insert(0, new Log { ProcessStatus = processStatus, Status = status, LogDate = logDate, Info = info, Message = message });
-            }
+            _logs.Insert(0, new Log { ProcessStatus = processStatus, LogDate = logDate, Message = message });
         }
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -129,19 +117,6 @@ namespace RB10.Bot.ToysrusToAmazon
                     DataGridViewCellStyle cellStyle = new DataGridViewCellStyle() { BackColor = System.Drawing.Color.Black, ForeColor = System.Drawing.Color.White };
                     dataGridView1.Rows[e.RowIndex].DefaultCellStyle = cellStyle;
                 }
-            }
-
-            if (dataGridView1.Columns[e.ColumnIndex].Name == Column5.Name)
-            {
-                if (e.Value.ToString() == "End")
-                {
-                    e.Value = Properties.Resources.check_active;
-                }
-                else
-                {
-                    e.Value = Properties.Resources.check_deactive;
-                }
-                e.FormattingApplied = true;
             }
         }
 

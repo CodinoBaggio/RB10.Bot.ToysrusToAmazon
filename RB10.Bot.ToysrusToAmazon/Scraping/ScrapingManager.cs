@@ -8,7 +8,7 @@ using static RB10.Bot.ToysrusToAmazon.Scraping.AmazonScraping;
 
 namespace RB10.Bot.ToysrusToAmazon.Scraping
 {
-    class ScrapingManager
+    class ScrapingManager : ScrapingBase
     {
         public class Parameters
         {
@@ -20,9 +20,6 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             public Parameters() => TargetUrls = new List<string>();
         }
 
-        public delegate void ExecutingStateEventHandler(object sender, ExecutingStateEventArgs e);
-        public event ExecutingStateEventHandler ExecutingStateChanged;
-
         public void Start(Parameters parameters)
         {
             Task.Run(() => Run(parameters));
@@ -30,7 +27,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         public void Run(Parameters parameters)
         {
-            Notify("処理開始", "処理を開始します。", NotifyStatus.Information, ProcessStatus.End);
+            Notify("処理を開始します。", NotifyStatus.Information);
 
             try
             {
@@ -39,14 +36,14 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 toysrus.ExecutingStateChanged += Scraping_ExecutingStateChanged;
                 var toysrusResult = toysrus.Run(parameters.TargetUrls, parameters.SearchKeyword);
 
-                Notify("トイザらス取得完了", "トイザらスからの情報取得が完了しました。", NotifyStatus.Information, ProcessStatus.End);
+                Notify("トイザらス：情報取得が完了しました。", NotifyStatus.Information);
 
                 // Amazonから取得
                 var amazon = new AmazonScraping { Delay = parameters.AmazonDelay };
                 amazon.ExecutingStateChanged += Scraping_ExecutingStateChanged;
                 List<ToyInformation> amazonResult = amazon.Run(toysrusResult);
 
-                Notify("Amazon取得完了", "Amazonからの情報取得が完了しました。", NotifyStatus.Information, ProcessStatus.End);
+                Notify("Amazon：情報取得が完了しました。", NotifyStatus.Information);
 
                 // ファイル出力
                 StringBuilder sb = new StringBuilder();
@@ -60,39 +57,16 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 {
                     System.IO.File.WriteAllText(parameters.SaveFileName, sb.ToString(), Encoding.GetEncoding("shift-jis"));
 
-                    Notify("結果ファイル出力完了", "結果ファイルの出力が完了しました。", NotifyStatus.Information, ProcessStatus.End);
+                    Notify("結果ファイルの出力が完了しました。", NotifyStatus.Information);
                 }
             }
             catch (Exception ex)
             {
-                Notify("例外エラー", ex.ToString(), NotifyStatus.Exception, ProcessStatus.End);
+                Notify(ex.ToString(), NotifyStatus.Exception);
             }
             finally
             {
-                Notify("処理完了", "すべての処理が完了しました。", NotifyStatus.Information, ProcessStatus.End);
-            }
-        }
-
-        private void Scraping_ExecutingStateChanged(object sender, ExecutingStateEventArgs e)
-        {
-            if (ExecutingStateChanged != null)
-            {
-                ExecutingStateChanged.Invoke(this, e);
-            }
-        }
-
-        protected void Notify(string info, string message, NotifyStatus reportState, ProcessStatus processState = ProcessStatus.Start)
-        {
-            if (ExecutingStateChanged != null)
-            {
-                var eventArgs = new ExecutingStateEventArgs()
-                {
-                    Info = info,
-                    Message = message,
-                    NotifyStatus = reportState,
-                    ProcessStatus = processState
-                };
-                ExecutingStateChanged.Invoke(this, eventArgs);
+                Notify("すべての処理が完了しました。", NotifyStatus.Information);
             }
         }
     }

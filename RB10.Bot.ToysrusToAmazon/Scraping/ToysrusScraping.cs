@@ -9,7 +9,7 @@ using static RB10.Bot.ToysrusToAmazon.ExecutingStateEvent;
 
 namespace RB10.Bot.ToysrusToAmazon.Scraping
 {
-    class ToysrusScraping
+    class ToysrusScraping : ScrapingBase
     {
         public class ToyInformation
         {
@@ -24,34 +24,35 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         public int Delay { get; set; }
 
+        private string _searchKeyword;
         private System.Text.RegularExpressions.Regex _numbersReg = new System.Text.RegularExpressions.Regex("全(?<numbers>[0-9]+)件中");
         private System.Text.RegularExpressions.Regex _priceReg = new System.Text.RegularExpressions.Regex(@"(?<price>.*)円 \(税込\)");
-        private System.Text.RegularExpressions.Regex _startExtraReg = new System.Text.RegularExpressions.Regex("^【.+】");
+        private System.Text.RegularExpressions.Regex _startExtraReg = new System.Text.RegularExpressions.Regex("^【.*?】");
         private System.Text.RegularExpressions.Regex _exist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫あり</div>");
         private System.Text.RegularExpressions.Regex _lessExist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫わずか</div>");
 
-        public delegate void ExecutingStateEventHandler(object sender, ExecutingStateEventArgs e);
-        public event ExecutingStateEventHandler ExecutingStateChanged;
-
         public List<ToyInformation> Run(List<string> urls, string searchKeyword)
         {
+            _searchKeyword = searchKeyword;
+
             // 各カテゴリー内の商品取得
             List<ToyInformation> ret = new List<ToyInformation>();
             foreach (var url in urls)
             {
-                var toyInformations = GetToyCollection(url, searchKeyword);
+                var toyInformations = GetToyCollection(url);
                 ret.AddRange(toyInformations);
             }
 
             return ret;
         }
 
-        private List<ToyInformation> GetToyCollection(string url, string searchKeyword)
+        private List<ToyInformation> GetToyCollection(string url)
         {
             List<ToyInformation> ret = new List<ToyInformation>();
 
+            // 最初のページの商品を取得
             string firstHtml = Utils.GetHtml($"{url}?type=03&sort=04", Delay);
-            List<ToyInformation>  firstPageToys = GetToyInPage(firstHtml, searchKeyword);
+            List<ToyInformation>  firstPageToys = GetToyInPage(firstHtml);
             ret.AddRange(firstPageToys);
 
             // ページ数を取得
@@ -60,18 +61,18 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             if (match.Success) toyCount = Convert.ToDouble(match.Groups["numbers"].Value);
             double pageCount = Math.Ceiling(toyCount / 120D);
 
-            // ページ毎に商品を取得
+            // 2ページ目以降の商品を取得
             for (int i = 2; i <= pageCount; i++)
             {
                 string html = Utils.GetHtml($"{url}?p={i}type=03&sort=04", Delay);
-                List<ToyInformation> toys = GetToyInPage(html, searchKeyword);
+                List<ToyInformation> toys = GetToyInPage(html);
                 ret.AddRange(toys);
             }
 
             return ret;
         }
 
-        private List<ToyInformation> GetToyInPage(string html, string searchKeyword)
+        private List<ToyInformation> GetToyInPage(string html)
         {
             List<ToyInformation> ret = new List<ToyInformation>();
 
@@ -80,19 +81,29 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
             foreach (var item in doc.GetElementsByClassName("sub-category-items"))
             {
-                var nameElement = item.GetElementsByClassName("item").Where(x=>x.Id.StartsWith("GO_GOODS_DISP_")).FirstOrDefault();
-                var elem = nameElement as AngleSharp.Dom.Html.IHtmlAnchorElement;
+                try
+                {
+                    var nameElement = item.GetElementsByClassName("item").Where(x => x.Id.StartsWith("GO_GOODS_DISP_")).FirstOrDefault();
+                    var elem = nameElement as AngleSharp.Dom.Html.IHtmlAnchorElement;
+                    if (elem == null) continue;
 
-                var toy = GetToy(elem.Href, searchKeyword);
-                if (toy == null) continue;
+                    var toy = GetToy(elem.Href);
+                    if (toy == null) continue;
 
-                ret.Add(toy);
+                    ret.Add(toy);
+
+                    Notify($"トイザらス：【{nameElement.InnerHtml}】の取得を行いました。", NotifyStatus.Information);
+                }
+                catch (Exception ex)
+                {
+                    Notify($"トイザらス：{ex.ToString()}", NotifyStatus.Exception);
+                }
             }
 
             return ret;
         }
 
-        private ToyInformation GetToy(string url, string searchKeyword)
+        private ToyInformation GetToy(string url)
         {
             ToyInformation ret = new ToyInformation();
             ret.Url = url;
@@ -102,7 +113,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var doc = parser.Parse(html);
 
             var productName = doc.GetElementById("DISP_GOODS_NM");
-            if (searchKeyword != "" && !productName.InnerHtml.Contains(searchKeyword)) return null;
+            if (_searchKeyword != "" && !productName.InnerHtml.Contains(_searchKeyword)) return null;
             ret.ToyName = ConvertToyName(productName.InnerHtml);
 
             var price = doc.GetElementsByClassName("inTax");
@@ -179,27 +190,14 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         private string ConvertToyName(string source)
         {
-            string ret = source.Replace("【送料無料】", "").Replace("トイザらス限定", "").Trim();
+            string ret = source.Replace("【送料無料】", "").Replace("トイザらス限定", "").Replace("ベビーザらス限定", "").Trim();
             ret = _startExtraReg.Replace(ret, "");
 
             return ret;
         }
 
-        protected void Notify(string info, string message, NotifyStatus reportState, ProcessStatus processState = ProcessStatus.Start)
-        {
-            if (ExecutingStateChanged != null)
-            {
-                var eventArgs = new ExecutingStateEventArgs()
-                {
-                    Info = info,
-                    Message = message,
-                    NotifyStatus = reportState,
-                    ProcessStatus = processState
-                };
-                ExecutingStateChanged.Invoke(this, eventArgs);
-            }
-        }
-
+        #region トイザらスカテゴリー取得
+        
         public class Store
         {
             public string StoreName { get; set; }
@@ -213,6 +211,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             public BindingList<string> Urls { get; set; }
             public Category() => Urls = new BindingList<string>();
         }
+
         public static BindingList<Store> GetCategories()
         {
             // トイザらスのカテゴリーのURL取得
@@ -305,5 +304,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
             return new BindingList<Store> { toysrus, babysrus };
         }
+
+        #endregion
     }
 }

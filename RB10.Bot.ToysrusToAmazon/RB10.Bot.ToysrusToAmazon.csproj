@@ -63,6 +63,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scraping\AmazonScraping.cs" />
+    <Compile Include="Scraping\ScrapingBase.cs" />
     <Compile Include="Scraping\ScrapingManager.cs" />
     <Compile Include="Scraping\ToysrusScraping.cs" />
     <Compile Include="Utils.cs" />
