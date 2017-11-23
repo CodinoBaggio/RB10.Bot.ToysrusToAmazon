@@ -199,7 +199,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         private string ConvertToyName(string source)
         {
-            string ret = source.Replace("【送料無料】", "")
+            string ret = source
                 .Replace("【送料無料】", "")
                 .Replace("トイザらス限定", "")
                 .Replace("トイザらス", "")
