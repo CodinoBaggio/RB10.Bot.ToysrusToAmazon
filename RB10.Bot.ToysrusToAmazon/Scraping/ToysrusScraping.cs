@@ -202,6 +202,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             string ret = source.Replace("【送料無料】", "")
                 .Replace("トイザらス", "")
                 .Replace("トイザらス限定", "")
+                .Replace("ベビーザらス", "")
                 .Replace("ベビーザらス限定", "")
                 .Replace("【クリアランス】", "")
                 .Replace("【オンライン限定価格】", "").Trim();

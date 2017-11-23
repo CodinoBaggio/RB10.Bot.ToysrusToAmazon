@@ -122,5 +122,11 @@ namespace RB10.Bot.ToysrusToAmazon
             comboBox2.DataSource = (comboBox1.SelectedValue as Scraping.ToysrusScraping.Store).Categories;
             comboBox2.DisplayMember = "CategoryName";
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var amazon = new Scraping.AmazonScraping();
+            var result = amazon.GetAmazonUsingAPI("プリキュア");
+        }
     }
 }

@@ -96,7 +96,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         private const string DESTINATION = "ecs.amazonaws.jp";
         private const string ASSOCIATE_TAG = "baggio10cod02-22";
 
-        private (string asin, int price) GetAmazonUsingAPI(string toyName)
+        public (string asin, int price) GetAmazonUsingAPI(string toyName)
         {
             try
             {
