@@ -24,7 +24,6 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         public int Delay { get; set; }
 
-        private string _searchKeyword;
         private System.Text.RegularExpressions.Regex _numbersReg = new System.Text.RegularExpressions.Regex("全(?<numbers>[0-9]+)件中");
         private System.Text.RegularExpressions.Regex _priceReg = new System.Text.RegularExpressions.Regex(@"(?<price>.*)円 \(税込\)");
         private System.Text.RegularExpressions.Regex _startExtraReg = new System.Text.RegularExpressions.Regex("^【.*?】");
@@ -33,25 +32,23 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         public List<ToyInformation> Run(List<string> urls, string searchKeyword)
         {
-            _searchKeyword = searchKeyword;
-
             // 各カテゴリー内の商品取得
             List<ToyInformation> ret = new List<ToyInformation>();
             foreach (var url in urls)
             {
-                var toyInformations = GetToyCollection(url);
+                var toyInformations = GetToyCollection(url, searchKeyword);
                 ret.AddRange(toyInformations);
             }
 
             return ret;
         }
 
-        private List<ToyInformation> GetToyCollection(string url)
+        private List<ToyInformation> GetToyCollection(string url, string searchKeyword)
         {
             List<ToyInformation> ret = new List<ToyInformation>();
 
             // 最初のページの商品を取得
-            string firstHtml = Utils.GetHtml($"{url}?type=03&sort=04", Delay);
+            string firstHtml = Utils.GetHtml(ToToysrusSearchUrl(url, searchKeyword, 1), Delay);
             List<ToyInformation>  firstPageToys = GetToyInPage(firstHtml);
             ret.AddRange(firstPageToys);
 
@@ -64,12 +61,25 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             // 2ページ目以降の商品を取得
             for (int i = 2; i <= pageCount; i++)
             {
-                string html = Utils.GetHtml($"{url}?p={i}type=03&sort=04", Delay);
+                string html = Utils.GetHtml(ToToysrusSearchUrl(url, searchKeyword, i), Delay);
                 List<ToyInformation> toys = GetToyInPage(html);
                 ret.AddRange(toys);
             }
 
             return ret;
+        }
+
+        private string ToToysrusSearchUrl(string url, string searchKeyword, int page)
+        {
+            if (searchKeyword != "")
+            {
+                string escapeUriString = Uri.EscapeUriString(searchKeyword);
+                return $"{url}?q={escapeUriString}&p={page}type=03&sort=04";
+            }
+            else
+            {
+                return $"{url}?p={page}&type=03&sort=04";
+            }
         }
 
         private List<ToyInformation> GetToyInPage(string html)
@@ -92,7 +102,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
                     ret.Add(toy);
 
-                    Notify($"トイザらス：【{nameElement.InnerHtml}】の取得を行いました。", NotifyStatus.Information);
+                    Notify($"トイザらス：[{nameElement.InnerHtml}]の取得を行いました。", NotifyStatus.Information);
                 }
                 catch (Exception ex)
                 {
@@ -113,7 +123,6 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var doc = parser.Parse(html);
 
             var productName = doc.GetElementById("DISP_GOODS_NM");
-            if (_searchKeyword != "" && !productName.InnerHtml.Contains(_searchKeyword)) return null;
             ret.ToyName = ConvertToyName(productName.InnerHtml);
 
             var price = doc.GetElementsByClassName("inTax");
@@ -190,7 +199,12 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         private string ConvertToyName(string source)
         {
-            string ret = source.Replace("【送料無料】", "").Replace("トイザらス限定", "").Replace("ベビーザらス限定", "").Replace("【クリアランス】", "").Trim();
+            string ret = source.Replace("【送料無料】", "")
+                .Replace("トイザらス", "")
+                .Replace("トイザらス限定", "")
+                .Replace("ベビーザらス限定", "")
+                .Replace("【クリアランス】", "")
+                .Replace("【オンライン限定価格】", "").Trim();
             ret = _startExtraReg.Replace(ret, "");
 
             return ret;

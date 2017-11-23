@@ -43,10 +43,13 @@ namespace RB10.Bot.ToysrusToAmazon
         {
             try
             {
+                string largeItem = comboBox1.Text;
+                string smallItem = comboBox2.Text;
+
                 SaveFileDialog dlg = new SaveFileDialog();
                 dlg.Title = "結果ファイルの出力先を指定して下さい。";
                 dlg.Filter = "csvファイル (*.csv)|*.csv|すべてのファイル (*.*)|*.*";
-                dlg.FileName = $"result_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv";
+                dlg.FileName = $"{largeItem}_{smallItem}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv";
                 if (dlg.ShowDialog() == DialogResult.Cancel) return;
 
                 dataGridView1.Rows.Clear();

@@ -50,7 +50,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 sb.AppendLine("トイザらスの商品ページのURL,トイザらスの商品名,トイザらスの税込価格,トイザらスのオンライン在庫,トイザらスの店舗在庫あり,トイザらスの店舗在庫わずか,トイザらスの商品画像URL,Asin,Amazonの税込価格,Amazonの商品画像のURL");
                 foreach (var result in amazonResult)
                 {
-                    sb.AppendLine($"{result.Url},{result.ToyName},{result.Price},{result.OnlineStock},{result.StoreStockCount},{result.StoreLessStockCount},{result.ImageUrl},{result.Asin},{result.AmazonPrice},{result.AmazonImageUrl}");
+                    sb.AppendLine($"{result.Url},\"{result.ToyName}\",{result.Price},{result.OnlineStock},{result.StoreStockCount},{result.StoreLessStockCount},{result.ImageUrl},{result.Asin},{result.AmazonPrice},{result.AmazonImageUrl}");
                 }
 
                 if (0 < amazonResult.Count())
