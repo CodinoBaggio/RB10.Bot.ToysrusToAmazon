@@ -26,7 +26,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         private System.Text.RegularExpressions.Regex _numbersReg = new System.Text.RegularExpressions.Regex("全(?<numbers>[0-9]+)件中");
         private System.Text.RegularExpressions.Regex _priceReg = new System.Text.RegularExpressions.Regex(@"(?<price>.*)円 \(税込\)");
-        private System.Text.RegularExpressions.Regex _startExtraReg = new System.Text.RegularExpressions.Regex("^【.*?】");
+        private System.Text.RegularExpressions.Regex _startExtraReg = new System.Text.RegularExpressions.Regex("【.*?】");
         private System.Text.RegularExpressions.Regex _exist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫あり</div>");
         private System.Text.RegularExpressions.Regex _lessExist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫わずか</div>");
 
@@ -199,21 +199,23 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         private string ConvertToyName(string source)
         {
-            string ret = source
-                .Replace("【送料無料】", "")
-                .Replace("トイザらス限定", "")
-                .Replace("トイザらス", "")
-                .Replace("ベビーザらス限定", "")
-                .Replace("ベビーザらス", "")
-                .Replace("【クリアランス】", "")
-                .Replace("【オンライン限定価格】", "").Trim();
-            ret = _startExtraReg.Replace(ret, "");
+            return _startExtraReg.Replace(source, "").Trim();
 
-            return ret;
+            //string ret = source
+            //    .Replace("【送料無料】", "")
+            //    .Replace("トイザらス限定", "")
+            //    .Replace("トイザらス", "")
+            //    .Replace("ベビーザらス限定", "")
+            //    .Replace("ベビーザらス", "")
+            //    .Replace("【クリアランス】", "")
+            //    .Replace("【オンライン限定価格】", "").Trim();
+            //ret = _startExtraReg.Replace(ret, "");
+
+            //return ret;
         }
 
         #region トイザらスカテゴリー取得
-        
+
         public class Store
         {
             public string StoreName { get; set; }
