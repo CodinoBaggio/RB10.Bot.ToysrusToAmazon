@@ -64,7 +64,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var doc = parser.Parse(html);
 
             var noResult = doc.GetElementById("noResultsTitle");
-            if(noResult != null)
+            if (noResult != null)
             {
                 return (null, 0, null);
             }
@@ -75,7 +75,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var asin = result.GetAttribute("data-asin");
             int price = 0;
             var priceTag = result.GetElementsByClassName("a-price-whole").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
-            if(priceTag != null)
+            if (priceTag != null)
             {
                 price = priceTag != null ? Convert.ToInt32(priceTag.InnerHtml.Replace(@",", "")) : 0;
             }
@@ -89,6 +89,53 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var imageElem = image as AngleSharp.Dom.Html.IHtmlImageElement;
 
             return (asin, price, imageElem.Source);
+        }
+
+        private const string MY_AWS_ACCESS_KEY_ID = "";
+        private const string MY_AWS_SECRET_KEY = "";
+        private const string DESTINATION = "ecs.amazonaws.jp";
+        private const string ASSOCIATE_TAG = "baggio10cod02-22";
+
+        private (string asin, int price) GetAmazonUsingAPI(string toyName)
+        {
+            try
+            {
+                var keyword = toyName.Replace("　", " ");
+                var helper = new Helper.SignedRequestHelper(MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_KEY, DESTINATION, ASSOCIATE_TAG);
+
+                IDictionary<string, string> request = new Dictionary<string, String>
+                {
+                    ["Service"] = "AWSECommerceService",
+                    ["Operation"] = "ItemSearch",
+                    ["SearchIndex"] = "All",
+                    ["ResponseGroup"] = "Medium",
+                    ["Keywords"] = keyword
+                };
+                var requestUrl = helper.Sign(request);
+                System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
+
+                System.Xml.Linq.XNamespace ns = xml.Root.Name.Namespace;
+                var errorMessageNodes = xml.Descendants(ns + "Message").ToList();
+                if (errorMessageNodes.Any())
+                {
+                    var message = errorMessageNodes[0].Value;
+                    return (null, 0);
+                }
+                var item = xml.Descendants(ns + "Item").FirstOrDefault();
+                var asin = item?.Descendants(ns + "ASIN").FirstOrDefault()?.Value;
+                var offerSummary = item?.Descendants(ns + "OfferSummary").FirstOrDefault();
+                var price = offerSummary?.Descendants(ns + "LowestNewPrice").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
+
+                return (asin, price != null ? Convert.ToInt32(price) : 0);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                Task.Delay(Delay).Wait();
+            }
         }
     }
 }
