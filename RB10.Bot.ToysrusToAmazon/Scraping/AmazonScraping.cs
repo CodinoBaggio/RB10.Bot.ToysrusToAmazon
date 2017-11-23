@@ -44,7 +44,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                         toyInformation.AmazonImageUrl = toy.imageUrl;
                         ret.Add(toyInformation);
 
-                        Notify($"Amazon：【{toysrusToyInformation.ToyName}】の取得を行いました。", NotifyStatus.Information);
+                        Notify($"Amazon：[{toysrusToyInformation.ToyName}]の取得を行いました。", NotifyStatus.Information);
                     }
                 }
                 catch (Exception ex)
@@ -59,9 +59,15 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         private (string asin, int price, string imageUrl) GetAmazonUsingScraping(string toyName)
         {
             var keyword = string.Join("+", toyName.Replace("　", " ").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
-            string html = Utils.GetHtml($"https://www.amazon.co.jp/s/field-keywords={keyword}", Delay);
+            string html = Utils.GetHtml($"https://www.amazon.co.jp/s/field-keywords={keyword}", Delay, 3);
             var parser = new HtmlParser();
             var doc = parser.Parse(html);
+
+            var noResult = doc.GetElementById("noResultsTitle");
+            if(noResult != null)
+            {
+                return (null, 0, null);
+            }
 
             var result = doc.GetElementById("result_0");
             if (result == null) return (null, 0, null);
