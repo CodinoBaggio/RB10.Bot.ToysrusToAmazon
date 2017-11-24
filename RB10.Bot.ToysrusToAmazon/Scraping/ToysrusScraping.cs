@@ -74,7 +74,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             if (searchKeyword != "")
             {
                 string escapeUriString = Uri.EscapeUriString(searchKeyword);
-                return $"{url}?q={escapeUriString}&p={page}type=03&sort=04";
+                return $"{url}?q={escapeUriString}&p={page}&type=03&sort=04";
             }
             else
             {
