@@ -120,7 +120,7 @@
             this.DelayNumericUpDown.TabIndex = 5;
             this.DelayNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.DelayNumericUpDown.Value = new decimal(new int[] {
-            1000,
+            500,
             0,
             0,
             0});
@@ -156,7 +156,7 @@
             this.AmazonNumericUpDown.TabIndex = 8;
             this.AmazonNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.AmazonNumericUpDown.Value = new decimal(new int[] {
-            1000,
+            500,
             0,
             0,
             0});

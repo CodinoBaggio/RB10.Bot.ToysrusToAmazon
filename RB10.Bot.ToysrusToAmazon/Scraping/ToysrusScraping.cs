@@ -123,7 +123,6 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                         ret.Add(toyInformation);
                     }
                     
-
                     Notify($"[{nameElement.InnerHtml}]の取得を行いました。", NotifyStatus.Information);
                 }
                 catch (Exception ex)
