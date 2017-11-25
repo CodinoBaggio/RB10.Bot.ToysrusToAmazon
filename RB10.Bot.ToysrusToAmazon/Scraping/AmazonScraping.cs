@@ -96,45 +96,55 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         private const string DESTINATION = "ecs.amazonaws.jp";
         private const string ASSOCIATE_TAG = "baggio10cod02-22";
 
-        public (string asin, int price) GetAmazonUsingAPI(string toyName)
+        public (string asin, int price, string imageUrl) GetAmazonUsingAPI(string toyName)
         {
-            try
+            int counter = 0;
+            int retryCount = 3;
+
+            while (true)
             {
-                var keyword = toyName.Replace("　", " ");
-                var helper = new Helper.SignedRequestHelper(MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_KEY, DESTINATION, ASSOCIATE_TAG);
-
-                IDictionary<string, string> request = new Dictionary<string, String>
+                try
                 {
-                    ["Service"] = "AWSECommerceService",
-                    ["Operation"] = "ItemSearch",
-                    ["SearchIndex"] = "All",
-                    ["ResponseGroup"] = "Medium",
-                    ["Keywords"] = keyword
-                };
-                var requestUrl = helper.Sign(request);
-                System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
+                    var keyword = toyName.Replace("　", " ");
+                    var helper = new Helper.SignedRequestHelper(MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_KEY, DESTINATION, ASSOCIATE_TAG);
 
-                System.Xml.Linq.XNamespace ns = xml.Root.Name.Namespace;
-                var errorMessageNodes = xml.Descendants(ns + "Message").ToList();
-                if (errorMessageNodes.Any())
-                {
-                    var message = errorMessageNodes[0].Value;
-                    return (null, 0);
+                    IDictionary<string, string> request = new Dictionary<string, String>
+                    {
+                        ["Service"] = "AWSECommerceService",
+                        ["Operation"] = "ItemSearch",
+                        ["SearchIndex"] = "All",
+                        ["ResponseGroup"] = "Medium",
+                        ["Keywords"] = keyword
+                    };
+                    var requestUrl = helper.Sign(request);
+                    System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
+
+                    System.Xml.Linq.XNamespace ns = xml.Root.Name.Namespace;
+                    var errorMessageNodes = xml.Descendants(ns + "Message").ToList();
+                    if (errorMessageNodes.Any())
+                    {
+                        var message = errorMessageNodes[0].Value;
+                        return (null, 0, null);
+                    }
+                    var item = xml.Descendants(ns + "Item").FirstOrDefault();
+                    var asin = item?.Descendants(ns + "ASIN").FirstOrDefault()?.Value;
+                    var offerSummary = item?.Descendants(ns + "OfferSummary").FirstOrDefault();
+                    var price = offerSummary?.Descendants(ns + "LowestNewPrice").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
+
+                    var image = xml.Descendants(ns + "MediumImage").FirstOrDefault();
+                    var imageUrl = image?.Descendants(ns + "URL").FirstOrDefault()?.Value;
+
+                    return (asin, price != null ? Convert.ToInt32(price) : 0, imageUrl);
                 }
-                var item = xml.Descendants(ns + "Item").FirstOrDefault();
-                var asin = item?.Descendants(ns + "ASIN").FirstOrDefault()?.Value;
-                var offerSummary = item?.Descendants(ns + "OfferSummary").FirstOrDefault();
-                var price = offerSummary?.Descendants(ns + "LowestNewPrice").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
-
-                return (asin, price != null ? Convert.ToInt32(price) : 0);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                Task.Delay(Delay).Wait();
+                catch (Exception)
+                {
+                    counter++;
+                    if (retryCount < counter) throw;
+                }
+                finally
+                {
+                    Task.Delay(Delay).Wait();
+                }
             }
         }
     }
