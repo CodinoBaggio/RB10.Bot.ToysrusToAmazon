@@ -56,7 +56,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             return ret;
         }
 
-        private (string asin, int price, string imageUrl) GetAmazonUsingScraping(string toyName)
+        public (string asin, int price, string imageUrl) GetAmazonUsingScraping(string toyName)
         {
             var keyword = string.Join("+", toyName.Replace("　", " ").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
             string html = Utils.GetHtml($"https://www.amazon.co.jp/s/field-keywords={keyword}", Delay, 3);

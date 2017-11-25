@@ -20,9 +20,13 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             public int StoreStockCount { get; set; } = -1;
             public int StoreLessStockCount { get; set; } = -1;
             public string ImageUrl { get; set; } = "";
+            public string Asin { get; set; }
+            public int AmazonPrice { get; set; }
+            public string AmazonImageUrl { get; set; }
         }
 
         public int Delay { get; set; }
+        public int AmazonDelay { get; set; }
 
         private System.Text.RegularExpressions.Regex _numbersReg = new System.Text.RegularExpressions.Regex("全(?<numbers>[0-9]+)件中");
         private System.Text.RegularExpressions.Regex _priceReg = new System.Text.RegularExpressions.Regex(@"(?<price>.*)円 \(税込\)");
@@ -88,6 +92,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
             var parser = new HtmlParser();
             var doc = parser.Parse(html);
+            var amazonScraping = new AmazonScraping { Delay = AmazonDelay };
 
             foreach (var item in doc.GetElementsByClassName("sub-category-items"))
             {
@@ -100,13 +105,30 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     var toy = GetToy(elem.Href);
                     if (toy == null) continue;
 
-                    ret.Add(toy);
+                    var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
 
-                    Notify($"トイザらス：[{nameElement.InnerHtml}]の取得を行いました。", NotifyStatus.Information);
+                    if (amazonToy.asin != null && toy.Price < amazonToy.price)
+                    {
+                        ToyInformation toyInformation = new ToyInformation();
+                        toyInformation.Url = toy.Url;
+                        toyInformation.ToyName = toy.ToyName;
+                        toyInformation.Price = toy.Price;
+                        toyInformation.OnlineStock = toy.OnlineStock;
+                        toyInformation.StoreStockCount = toy.StoreStockCount;
+                        toyInformation.StoreLessStockCount = toy.StoreLessStockCount;
+                        toyInformation.ImageUrl = toy.ImageUrl;
+                        toyInformation.Asin = amazonToy.asin;
+                        toyInformation.AmazonPrice = amazonToy.price;
+                        toyInformation.AmazonImageUrl = amazonToy.imageUrl;
+                        ret.Add(toyInformation);
+                    }
+                    
+
+                    Notify($"[{nameElement.InnerHtml}]の取得を行いました。", NotifyStatus.Information);
                 }
                 catch (Exception ex)
                 {
-                    Notify($"トイザらス：{ex.ToString()}", NotifyStatus.Exception);
+                    Notify($"{ex.ToString()}", NotifyStatus.Exception);
                 }
             }
 

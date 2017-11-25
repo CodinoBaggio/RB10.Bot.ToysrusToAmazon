@@ -32,28 +32,28 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             try
             {
                 // トイザらスから取得
-                var toysrus = new ToysrusScraping { Delay = parameters.ToysrusDelay };
+                var toysrus = new ToysrusScraping { Delay = parameters.ToysrusDelay, AmazonDelay = parameters.AmazonDelay };
                 toysrus.ExecutingStateChanged += Scraping_ExecutingStateChanged;
                 var toysrusResult = toysrus.Run(parameters.TargetUrls, parameters.SearchKeyword);
 
-                Notify("トイザらス：情報取得が完了しました。", NotifyStatus.Information);
+                Notify("情報取得が完了しました。", NotifyStatus.Information);
 
-                // Amazonから取得
-                var amazon = new AmazonScraping { Delay = parameters.AmazonDelay };
-                amazon.ExecutingStateChanged += Scraping_ExecutingStateChanged;
-                List<ToyInformation> amazonResult = amazon.Run(toysrusResult);
+                //// Amazonから取得
+                //var amazon = new AmazonScraping { Delay = parameters.AmazonDelay };
+                //amazon.ExecutingStateChanged += Scraping_ExecutingStateChanged;
+                //List<ToyInformation> amazonResult = amazon.Run(toysrusResult);
 
-                Notify("Amazon：情報取得が完了しました。", NotifyStatus.Information);
+                //Notify("Amazon：情報取得が完了しました。", NotifyStatus.Information);
 
                 // ファイル出力
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("トイザらスの商品ページのURL,トイザらスの商品名,トイザらスの税込価格,トイザらスのオンライン在庫,トイザらスの店舗在庫あり,トイザらスの店舗在庫わずか,トイザらスの商品画像URL,Asin,Amazonの税込価格,Amazonの商品画像のURL");
-                foreach (var result in amazonResult)
+                foreach (var result in toysrusResult)
                 {
                     sb.AppendLine($"{result.Url},\"{result.ToyName}\",{result.Price},{result.OnlineStock},{result.StoreStockCount},{result.StoreLessStockCount},{result.ImageUrl},{result.Asin},{result.AmazonPrice},{result.AmazonImageUrl}");
                 }
 
-                if (0 < amazonResult.Count())
+                if (0 < toysrusResult.Count())
                 {
                     System.IO.File.WriteAllText(parameters.SaveFileName, sb.ToString(), Encoding.GetEncoding("shift-jis"));
 

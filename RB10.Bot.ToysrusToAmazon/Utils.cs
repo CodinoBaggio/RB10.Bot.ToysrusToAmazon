@@ -33,7 +33,7 @@ namespace RB10.Bot.ToysrusToAmazon
 
                     using (var res = (HttpWebResponse)req.GetResponse())
                     using (var resSt = res.GetResponseStream())
-                    using (var sr = new StreamReader(resSt, Encoding.UTF8))
+                    using (var sr = new StreamReader(resSt))
                     {
                         html = sr.ReadToEnd();
                     }
