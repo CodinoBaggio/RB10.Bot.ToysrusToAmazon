@@ -53,6 +53,12 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
             // 最初のページの商品を取得
             string firstHtml = Utils.GetHtml(ToToysrusSearchUrl(url, searchKeyword, 1), Delay);
+
+            if (firstHtml.Contains("検索結果は0件でした"))
+            {
+                return ret;
+            }
+
             List<ToyInformation>  firstPageToys = GetToyInPage(firstHtml);
             ret.AddRange(firstPageToys);
 
@@ -94,16 +100,17 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var doc = parser.Parse(html);
             var amazonScraping = new AmazonScraping { Delay = AmazonDelay };
 
-            foreach (var item in doc.GetElementsByClassName("sub-category-items"))
+            var items = doc.GetElementsByClassName("sub-category-items");
+            if (items.Count() == 0)
             {
                 try
                 {
-                    var nameElement = item.GetElementsByClassName("item").Where(x => x.Id.StartsWith("GO_GOODS_DISP_")).FirstOrDefault();
-                    var elem = nameElement as AngleSharp.Dom.Html.IHtmlAnchorElement;
-                    if (elem == null) continue;
-
-                    var toy = GetToy(elem.Href);
-                    if (toy == null) continue;
+                    var reg = new System.Text.RegularExpressions.Regex("(?<url>" + System.Text.RegularExpressions.Regex.Escape("href=\"https://www.toysrus.co.jp/s/dsg-") + "[0-9]+)");
+                    var match = reg.Match(html);
+                    string url = "";
+                    if (match.Success) url = match.Groups["url"].Value.Replace("href=\"", "");
+                    var toy = GetToy(url);
+                    if (toy == null) return ret;
 
                     var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
 
@@ -122,12 +129,51 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                         toyInformation.AmazonImageUrl = amazonToy.imageUrl;
                         ret.Add(toyInformation);
                     }
-                    
-                    Notify($"[{nameElement.InnerHtml}]の取得を行いました。", NotifyStatus.Information);
+
+                    Notify($"[{toy.ToyName}]の取得を行いました。", NotifyStatus.Information);
                 }
                 catch (Exception ex)
                 {
                     Notify($"{ex.ToString()}", NotifyStatus.Exception);
+                }
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    try
+                    {
+                        var nameElement = item.GetElementsByClassName("item").Where(x => x.Id.StartsWith("GO_GOODS_DISP_")).FirstOrDefault();
+                        var elem = nameElement as AngleSharp.Dom.Html.IHtmlAnchorElement;
+                        if (elem == null) continue;
+
+                        var toy = GetToy(elem.Href);
+                        if (toy == null) continue;
+
+                        var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
+
+                        if (amazonToy.asin != null && toy.Price < amazonToy.price)
+                        {
+                            ToyInformation toyInformation = new ToyInformation();
+                            toyInformation.Url = toy.Url;
+                            toyInformation.ToyName = toy.ToyName;
+                            toyInformation.Price = toy.Price;
+                            toyInformation.OnlineStock = toy.OnlineStock;
+                            toyInformation.StoreStockCount = toy.StoreStockCount;
+                            toyInformation.StoreLessStockCount = toy.StoreLessStockCount;
+                            toyInformation.ImageUrl = toy.ImageUrl;
+                            toyInformation.Asin = amazonToy.asin;
+                            toyInformation.AmazonPrice = amazonToy.price;
+                            toyInformation.AmazonImageUrl = amazonToy.imageUrl;
+                            ret.Add(toyInformation);
+                        }
+
+                        Notify($"[{nameElement.InnerHtml}]の取得を行いました。", NotifyStatus.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        Notify($"{ex.ToString()}", NotifyStatus.Exception);
+                    }
                 }
             }
 
