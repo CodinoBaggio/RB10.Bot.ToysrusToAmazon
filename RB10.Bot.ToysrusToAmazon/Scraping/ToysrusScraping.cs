@@ -105,7 +105,15 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     var toy = GetToy(elem.Href);
                     if (toy == null) continue;
 
-                    var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
+                    (string asin, int price, string imageUrl) amazonToy;
+                    if(Properties.Settings.Default.AWSAccessKeyID != "")
+                    {
+                        amazonToy = amazonScraping.GetAmazonUsingAPI(toy.ToyName);
+                    }
+                    else
+                    {
+                        amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
+                    }
 
                     if (amazonToy.asin != null && toy.Price < amazonToy.price)
                     {

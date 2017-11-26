@@ -156,7 +156,7 @@
             this.AmazonNumericUpDown.TabIndex = 8;
             this.AmazonNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.AmazonNumericUpDown.Value = new decimal(new int[] {
-            500,
+            800,
             0,
             0,
             0});
