@@ -33,6 +33,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         private System.Text.RegularExpressions.Regex _startExtraReg = new System.Text.RegularExpressions.Regex("【.*?】");
         private System.Text.RegularExpressions.Regex _exist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫あり</div>");
         private System.Text.RegularExpressions.Regex _lessExist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫わずか</div>");
+        private System.Text.RegularExpressions.Regex _toyDetailUrlReg = new System.Text.RegularExpressions.Regex("(?<url>" + System.Text.RegularExpressions.Regex.Escape("href=\"https://www.toysrus.co.jp/s/dsg-") + "[0-9]+)");
 
         public List<ToyInformation> Run(List<string> urls, string searchKeyword)
         {
@@ -105,8 +106,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             {
                 try
                 {
-                    var reg = new System.Text.RegularExpressions.Regex("(?<url>" + System.Text.RegularExpressions.Regex.Escape("href=\"https://www.toysrus.co.jp/s/dsg-") + "[0-9]+)");
-                    var match = reg.Match(html);
+                    var match = _toyDetailUrlReg.Match(html);
                     string url = "";
                     if (match.Success) url = match.Groups["url"].Value.Replace("href=\"", "");
                     var toy = GetToy(url);
