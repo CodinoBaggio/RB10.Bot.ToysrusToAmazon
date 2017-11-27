@@ -58,8 +58,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
         public (string asin, int price, string imageUrl) GetAmazonUsingScraping(string toyName)
         {
-            var keyword = string.Join("+", toyName.Replace("　", " ").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
-            string html = Utils.GetHtml($"https://www.amazon.co.jp/s/field-keywords={keyword}", Delay, 3);
+            string html = Utils.GetHtml($"https://www.amazon.co.jp/s/?field-keywords={System.Web.HttpUtility.UrlEncode(toyName)}", Delay, 3);
             var parser = new HtmlParser();
             var doc = parser.Parse(html);
 
@@ -69,23 +68,60 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 return (null, 0, null);
             }
 
-            var result = doc.GetElementById("result_0");
+            var aaa = doc.GetElementById("atfResults");
+            var countReg = new System.Text.RegularExpressions.Regex("result_[0-9]+");
+            int count = countReg.Matches(aaa.InnerHtml).Count;
+
+            AngleSharp.Dom.IElement result = null;
+            for (int i = 0; i < count; i++)
+            {
+                var resultN = doc.GetElementById($"result_{i}");
+                if (resultN == null) continue;
+                if (resultN.InnerHtml.Contains("Amazonビデオ"))
+                {
+                    continue;
+                }
+                else
+                {
+                    result = resultN;
+                    break;
+                }              
+            }
             if (result == null) return (null, 0, null);
 
-            var asin = result.GetAttribute("data-asin");
+            var asin = result?.GetAttribute("data-asin");
             int price = 0;
-            var priceTag = result.GetElementsByClassName("a-price-whole").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
+            var priceTag = result?.GetElementsByClassName("a-price-whole").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
             if(priceTag != null)
             {
                 price = priceTag != null ? Convert.ToInt32(priceTag.InnerHtml.Replace(@",", "")) : 0;
             }
             else
             {
-                priceTag = result.GetElementsByClassName("a-size-base a-color-price s-price a-text-bold").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
-                price = priceTag != null ? Convert.ToInt32(priceTag.InnerHtml.Replace(@",", "").Replace(@"￥", "").Trim()) : 0;
+                priceTag = result?.GetElementsByClassName("a-size-base a-color-price s-price a-text-bold").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
+                if (priceTag == null) priceTag = result?.GetElementsByClassName("a-size-base a-color-price a-text-bold").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
+                if (priceTag != null)
+                {
+                    var reg = new System.Text.RegularExpressions.Regex(@".+\-.+");
+                    string priceText = "";
+                    if (reg.IsMatch(priceTag.InnerHtml))
+                    {
+                        priceText = priceTag.InnerHtml.Substring(0, priceTag.InnerHtml.IndexOf("-") - 1);
+                    }
+                    else
+                    {
+                        priceText = priceTag.InnerHtml;
+                    }
+
+                    price = priceTag != null ? Convert.ToInt32(priceText.Replace(@",", "").Replace(@"￥", "").Trim()) : 0;
+                }
+                else
+                {
+                    price = 0;
+                }
             }
 
-            var image = result.GetElementsByClassName("s-access-image cfMarker").FirstOrDefault();
+            var image = result?.GetElementsByClassName("s-access-image cfMarker").FirstOrDefault();
             var imageElem = image as AngleSharp.Dom.Html.IHtmlImageElement;
 
             return (asin, price, imageElem.Source);
