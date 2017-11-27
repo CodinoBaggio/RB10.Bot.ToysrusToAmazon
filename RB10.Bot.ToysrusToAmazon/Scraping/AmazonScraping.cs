@@ -13,9 +13,6 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
     {
         public class ToyInformation : ToysrusScraping.ToyInformation
         {
-            public string Asin { get; set; }
-            public int AmazonPrice { get; set; }
-            public string AmazonImageUrl { get; set; }
         }
 
         public int Delay { get; set; }
@@ -70,7 +67,10 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             }
 
             var result = doc.GetElementById("result_0");
-            if (result == null) return (null, 0, null);
+            if (result == null)
+            {
+                throw new Exception("Amazon検索で画像認証ページが表示された可能性があります。");
+            }           
 
             var asin = result.GetAttribute("data-asin");
             int price = 0;
@@ -89,6 +89,60 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var imageElem = image as AngleSharp.Dom.Html.IHtmlImageElement;
 
             return (asin, price, imageElem.Source);
+        }
+
+        private const string DESTINATION = "ecs.amazonaws.jp";
+
+        public (string asin, int price, string imageUrl) GetAmazonUsingAPI(string toyName)
+        {
+            int counter = 0;
+            int retryCount = 3;
+
+            while (true)
+            {
+                try
+                {
+                    var keyword = toyName.Replace("　", " ");
+                    var helper = new Helper.SignedRequestHelper(Properties.Settings.Default.AWSAccessKeyID, Properties.Settings.Default.AWSSecretKey, DESTINATION, Properties.Settings.Default.AssociateTag);
+
+                    IDictionary<string, string> request = new Dictionary<string, String>
+                    {
+                        ["Service"] = "AWSECommerceService",
+                        ["Operation"] = "ItemSearch",
+                        ["SearchIndex"] = "All",
+                        ["ResponseGroup"] = "Medium",
+                        ["Keywords"] = keyword
+                    };
+                    var requestUrl = helper.Sign(request);
+                    System.Xml.Linq.XDocument xml = System.Xml.Linq.XDocument.Load(requestUrl);
+
+                    System.Xml.Linq.XNamespace ns = xml.Root.Name.Namespace;
+                    var errorMessageNodes = xml.Descendants(ns + "Message").ToList();
+                    if (errorMessageNodes.Any())
+                    {
+                        var message = errorMessageNodes[0].Value;
+                        return (null, 0, null);
+                    }
+                    var item = xml.Descendants(ns + "Item").FirstOrDefault();
+                    var asin = item?.Descendants(ns + "ASIN").FirstOrDefault()?.Value;
+                    var offerSummary = item?.Descendants(ns + "OfferSummary").FirstOrDefault();
+                    var price = offerSummary?.Descendants(ns + "LowestNewPrice").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
+
+                    var image = xml.Descendants(ns + "LargeImage").FirstOrDefault();
+                    var imageUrl = image?.Descendants(ns + "URL").FirstOrDefault()?.Value;
+
+                    return (asin, price != null ? Convert.ToInt32(price) : 0, imageUrl);
+                }
+                catch (Exception)
+                {
+                    counter++;
+                    if (retryCount < counter) throw;
+                }
+                finally
+                {
+                    Task.Delay(Delay).Wait();
+                }
+            }
         }
     }
 }
