@@ -33,6 +33,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         private System.Text.RegularExpressions.Regex _startExtraReg = new System.Text.RegularExpressions.Regex("【.*?】");
         private System.Text.RegularExpressions.Regex _exist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫あり</div>");
         private System.Text.RegularExpressions.Regex _lessExist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫わずか</div>");
+        private System.Text.RegularExpressions.Regex _toyDetailUrlReg = new System.Text.RegularExpressions.Regex("(?<url>" + System.Text.RegularExpressions.Regex.Escape("href=\"https://www.toysrus.co.jp/s/dsg-") + "[0-9]+)");
 
         public List<ToyInformation> Run(List<string> urls, string searchKeyword)
         {
@@ -105,8 +106,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             {
                 try
                 {
-                    var reg = new System.Text.RegularExpressions.Regex("(?<url>" + System.Text.RegularExpressions.Regex.Escape("href=\"https://www.toysrus.co.jp/s/dsg-") + "[0-9]+)");
-                    var match = reg.Match(html);
+                    var match = _toyDetailUrlReg.Match(html);
                     string url = "";
                     if (match.Success) url = match.Groups["url"].Value.Replace("href=\"", "");
                     var toy = GetToy(url);
@@ -321,11 +321,12 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     if (href.StartsWith("https://www.toysrus.co.jp/cat"))
                     {
                         cate.CategoryName = link.InnerHtml;
+                        cate.Urls.Add(href.Replace("cat", "c"));
                     }
-                    else
-                    {
-                        cate.Urls.Add(href);
-                    }
+                    //else
+                    //{
+                    //    cate.Urls.Add(href);
+                    //}
                 }
                 toysrus.Categories.Add(cate);
             }
@@ -334,13 +335,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             {
                 CategoryName = "すべて",
             };
-            foreach (var item in toysrus.Categories)
-            {
-                foreach (var item2 in item.Urls)
-                {
-                    allCate.Urls.Add(item2);
-                }
-            }
+            allCate.Urls.Add("https://www.toysrus.co.jp/c001/");
             toysrus.Categories.Insert(0, allCate);
 
             // ベビーザらスのカテゴリーのURL取得
@@ -365,11 +360,12 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     if (href.StartsWith("https://www.toysrus.co.jp/cat"))
                     {
                         cate.CategoryName = link.InnerHtml;
+                        cate.Urls.Add(href.Replace("cat", "c"));
                     }
-                    else
-                    {
-                        cate.Urls.Add(href);
-                    }
+                    //else
+                    //{
+                    //    cate.Urls.Add(href);
+                    //}
                 }
                 babysrus.Categories.Add(cate);
             }
@@ -378,13 +374,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             {
                 CategoryName = "すべて",
             };
-            foreach (var item in babysrus.Categories)
-            {
-                foreach (var item2 in item.Urls)
-                {
-                    allCate.Urls.Add(item2);
-                }
-            }
+            allCate.Urls.Add("https://www.toysrus.co.jp/c002/");
             babysrus.Categories.Insert(0, allCate);
 
             return new BindingList<Store> { toysrus, babysrus };
