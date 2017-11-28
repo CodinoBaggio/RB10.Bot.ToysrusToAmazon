@@ -104,6 +104,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var items = doc.GetElementsByClassName("sub-category-items");
             if (items.Count() == 0)
             {
+                string toyName = "-";
+
                 try
                 {
                     var match = _toyDetailUrlReg.Match(html);
@@ -111,6 +113,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     if (match.Success) url = match.Groups["url"].Value.Replace("href=\"", "");
                     var toy = GetToy(url);
                     if (toy == null) return ret;
+                    toyName = toy.ToyName;
 
                     var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
 
@@ -134,13 +137,15 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 }
                 catch (Exception ex)
                 {
-                    Notify($"{ex.ToString()}", NotifyStatus.Exception);
+                    Notify($"[{toyName}]{ex.ToString()}", NotifyStatus.Exception);
                 }
             }
             else
             {
                 foreach (var item in items)
                 {
+                    string toyName = "-";
+
                     try
                     {
                         var nameElement = item.GetElementsByClassName("item").Where(x => x.Id.StartsWith("GO_GOODS_DISP_")).FirstOrDefault();
@@ -149,6 +154,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
 
                         var toy = GetToy(elem.Href);
                         if (toy == null) continue;
+                        toyName = toy.ToyName;
 
                         var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
 
@@ -172,7 +178,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     }
                     catch (Exception ex)
                     {
-                        Notify($"{ex.ToString()}", NotifyStatus.Exception);
+                        Notify($"[{toyName}]{ex.ToString()}", NotifyStatus.Exception);
                     }
                 }
             }

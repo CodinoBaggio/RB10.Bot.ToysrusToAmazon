@@ -13,12 +13,11 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
     {
         public class ToyInformation : ToysrusScraping.ToyInformation
         {
-            public string Asin { get; set; }
-            public int AmazonPrice { get; set; }
-            public string AmazonImageUrl { get; set; }
         }
 
         public int Delay { get; set; }
+
+        private System.Text.RegularExpressions.Regex _priceRangeReg = new System.Text.RegularExpressions.Regex(@".+\-.+");
 
         public List<ToyInformation> Run(List<ToysrusScraping.ToyInformation> toysrusToyInformations)
         {
@@ -68,9 +67,13 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 return (null, 0, null);
             }
 
-            var aaa = doc.GetElementById("atfResults");
+            var atfResults = doc.GetElementById("atfResults");
+            if (atfResults == null)
+            {
+                return (null, 0, null);
+            }
             var countReg = new System.Text.RegularExpressions.Regex("result_[0-9]+");
-            int count = countReg.Matches(aaa.InnerHtml).Count;
+            int count = countReg.Matches(atfResults.InnerHtml).Count;
 
             AngleSharp.Dom.IElement result = null;
             for (int i = 0; i < count; i++)
@@ -94,7 +97,16 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             var priceTag = result?.GetElementsByClassName("a-price-whole").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
             if(priceTag != null)
             {
-                price = priceTag != null ? Convert.ToInt32(priceTag.InnerHtml.Replace(@",", "")) : 0;
+                string priceText = "";
+                if (_priceRangeReg.IsMatch(priceTag.InnerHtml))
+                {
+                    priceText = priceTag.InnerHtml.Substring(0, priceTag.InnerHtml.IndexOf("-") - 1);
+                }
+                else
+                {
+                    priceText = priceTag.InnerHtml;
+                }
+                price = Convert.ToInt32(priceText.Replace(@",", "").Replace(@"￥", "").Trim());
             }
             else
             {
@@ -102,9 +114,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 if (priceTag == null) priceTag = result?.GetElementsByClassName("a-size-base a-color-price a-text-bold").FirstOrDefault() as AngleSharp.Dom.Html.IHtmlSpanElement;
                 if (priceTag != null)
                 {
-                    var reg = new System.Text.RegularExpressions.Regex(@".+\-.+");
                     string priceText = "";
-                    if (reg.IsMatch(priceTag.InnerHtml))
+                    if (_priceRangeReg.IsMatch(priceTag.InnerHtml))
                     {
                         priceText = priceTag.InnerHtml.Substring(0, priceTag.InnerHtml.IndexOf("-") - 1);
                     }
