@@ -6,13 +6,13 @@
       <Value Profile="(Default)">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36</Value>
     </Setting>
     <Setting Name="AWSAccessKeyID" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">AKIAIW5VMOY47U46SOHA</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AWSSecretKey" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">VpOjKJTPA5oVH83HEITGd66qbMJn57+Eaj0ny71m</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AssociateTag" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">baggio10cod02-22</Value>
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

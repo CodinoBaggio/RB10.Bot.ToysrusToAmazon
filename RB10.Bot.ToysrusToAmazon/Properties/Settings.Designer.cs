@@ -35,7 +35,7 @@ namespace RB10.Bot.ToysrusToAmazon.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("AKIAIW5VMOY47U46SOHA")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string AWSAccessKeyID {
             get {
                 return ((string)(this["AWSAccessKeyID"]));
@@ -44,7 +44,7 @@ namespace RB10.Bot.ToysrusToAmazon.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("VpOjKJTPA5oVH83HEITGd66qbMJn57+Eaj0ny71m")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string AWSSecretKey {
             get {
                 return ((string)(this["AWSSecretKey"]));
@@ -53,7 +53,7 @@ namespace RB10.Bot.ToysrusToAmazon.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("baggio10cod02-22")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string AssociateTag {
             get {
                 return ((string)(this["AssociateTag"]));
