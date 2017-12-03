@@ -34,6 +34,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         private System.Text.RegularExpressions.Regex _exist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫あり</div>");
         private System.Text.RegularExpressions.Regex _lessExist = new System.Text.RegularExpressions.Regex("<div class=\"status\">在庫わずか</div>");
         private System.Text.RegularExpressions.Regex _toyDetailUrlReg = new System.Text.RegularExpressions.Regex("(?<url>" + System.Text.RegularExpressions.Regex.Escape("href=\"https://www.toysrus.co.jp/s/dsg-") + "[0-9]+)");
+        private double _toyCount = 0;
+        private double _currentCount = 0;
 
         public List<ToyInformation> Run(List<string> urls, string searchKeyword)
         {
@@ -60,14 +62,20 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 return ret;
             }
 
+            // ページ数を取得
+            var match = _numbersReg.Match(firstHtml);
+            if (match.Success)
+            {
+                _toyCount = Convert.ToDouble(match.Groups["numbers"].Value);
+            }
+            else
+            {
+                _toyCount = 1;
+            }
+            double pageCount = Math.Ceiling(_toyCount / 120D);
+
             List<ToyInformation>  firstPageToys = GetToyInPage(firstHtml);
             ret.AddRange(firstPageToys);
-
-            // ページ数を取得
-            double toyCount = 0;
-            var match = _numbersReg.Match(firstHtml);
-            if (match.Success) toyCount = Convert.ToDouble(match.Groups["numbers"].Value);
-            double pageCount = Math.Ceiling(toyCount / 120D);
 
             // 2ページ目以降の商品を取得
             for (int i = 2; i <= pageCount; i++)
@@ -115,7 +123,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     if (toy == null) return ret;
                     toyName = toy.ToyName;
 
-                    var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
+                    var amazonToy = amazonScraping.GetAmazonUsingAPI(toy.ToyName);
+                    //var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
 
                     if (amazonToy.asin != null && toy.Price < amazonToy.price)
                     {
@@ -139,6 +148,11 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 {
                     Notify($"[{toyName}]{ex.ToString()}", NotifyStatus.Exception);
                 }
+                finally
+                {
+                    _currentCount++;
+                    NotifyProgress(Convert.ToInt32(_toyCount), Convert.ToInt32(_currentCount));
+                }
             }
             else
             {
@@ -156,7 +170,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                         if (toy == null) continue;
                         toyName = toy.ToyName;
 
-                        var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
+                        var amazonToy = amazonScraping.GetAmazonUsingAPI(toy.ToyName);
+                        //var amazonToy = amazonScraping.GetAmazonUsingScraping(toy.ToyName);
 
                         if (amazonToy.asin != null && toy.Price < amazonToy.price)
                         {
@@ -179,6 +194,11 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     catch (Exception ex)
                     {
                         Notify($"[{toyName}]{ex.ToString()}", NotifyStatus.Exception);
+                    }
+                    finally
+                    {
+                        _currentCount++;
+                        NotifyProgress(Convert.ToInt32(_toyCount), Convert.ToInt32(_currentCount));
                     }
                 }
             }

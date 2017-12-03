@@ -34,6 +34,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                 // トイザらスから取得
                 var toysrus = new ToysrusScraping { Delay = parameters.ToysrusDelay, AmazonDelay = parameters.AmazonDelay };
                 toysrus.ExecutingStateChanged += Scraping_ExecutingStateChanged;
+                toysrus.ProgressChanged += Scraping_ProgressChanged;
                 var toysrusResult = toysrus.Run(parameters.TargetUrls, parameters.SearchKeyword);
 
                 Notify("情報取得が完了しました。", NotifyStatus.Information);

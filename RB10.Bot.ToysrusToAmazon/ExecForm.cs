@@ -22,6 +22,7 @@ namespace RB10.Bot.ToysrusToAmazon
 
         private BindingList<Log> _logs { get; set; }
         delegate void LogDelegate(string processStatus, string logDate, string message);
+        delegate void ProgressDelegate(ProgressEventArgs e);
 
         public ExecForm()
         {
@@ -37,6 +38,8 @@ namespace RB10.Bot.ToysrusToAmazon
 
             comboBox1.DataSource = Scraping.ToysrusScraping.GetCategories();
             comboBox1.DisplayMember = "StoreName";
+
+            LoadLog();
         }
 
         private void RunButton_Click(object sender, EventArgs e)
@@ -53,6 +56,7 @@ namespace RB10.Bot.ToysrusToAmazon
                 if (dlg.ShowDialog() == DialogResult.Cancel) return;
 
                 dataGridView1.Rows.Clear();
+                DeleteLogButton.Enabled = false;
 
                 var parameters = new Scraping.ScrapingManager.Parameters
                 {
@@ -65,6 +69,7 @@ namespace RB10.Bot.ToysrusToAmazon
 
                 var task = new Scraping.ScrapingManager();
                 task.ExecutingStateChanged += Task_ExecutingStateChanged;
+                task.ProgressChanged += Task_ProgressChanged;
                 task.Start(parameters);
             }
             catch (ApplicationException ex)
@@ -74,6 +79,10 @@ namespace RB10.Bot.ToysrusToAmazon
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                DeleteLogButton.Enabled = true;
             }
         }
 
@@ -91,6 +100,16 @@ namespace RB10.Bot.ToysrusToAmazon
             }
 
             _logs.Insert(0, new Log { ProcessStatus = processStatus, LogDate = logDate, Message = message });
+        }
+
+        private void Task_ProgressChanged(object sender, ProgressEventArgs e)
+        {
+            Invoke(new ProgressDelegate(UpdateProgress), e);
+        }
+
+        private void UpdateProgress(ProgressEventArgs e)
+        {
+            ProgressLabel.Text = e.ToString();
         }
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -121,6 +140,43 @@ namespace RB10.Bot.ToysrusToAmazon
         {
             comboBox2.DataSource = (comboBox1.SelectedValue as Scraping.ToysrusScraping.Store).Categories;
             comboBox2.DisplayMember = "CategoryName";
+        }
+
+        private void ExecForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            var sb = new StringBuilder();
+            for (int i = dataGridView1.Rows.Count - 1; i >= 0; i--)
+            {
+                sb.AppendLine($"{dataGridView1.Rows[i].Cells[0].Value.ToString()},{dataGridView1.Rows[i].Cells[1].Value.ToString()},{dataGridView1.Rows[i].Cells[2].Value.ToString()}");
+            }
+
+            if (System.IO.File.Exists(@"result.txt"))
+            {
+                System.IO.File.Delete(@"result.txt");
+            }
+
+            System.IO.File.WriteAllText(@"result.txt", sb.ToString());
+        }
+
+        private void DeleteLogButton_Click(object sender, EventArgs e)
+        {
+            if (System.IO.File.Exists(@"result.txt"))
+            {
+                System.IO.File.Delete(@"result.txt");
+            }
+            dataGridView1.Rows.Clear();
+        }
+
+        private void LoadLog()
+        {
+            if (!System.IO.File.Exists(@"result.txt")) return;
+
+            var text = System.IO.File.ReadLines(@"result.txt");
+            foreach (var line in text)
+            {
+                var values = line.Split(',');
+                UpdateLog(values[0], values[1], values[2]);
+            }
         }
     }
 }

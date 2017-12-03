@@ -32,5 +32,32 @@ namespace RB10.Bot.ToysrusToAmazon.Properties {
                 return ((string)(this["UserAgent"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AKIAIW5VMOY47U46SOHA")]
+        public string AWSAccessKeyID {
+            get {
+                return ((string)(this["AWSAccessKeyID"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("VpOjKJTPA5oVH83HEITGd66qbMJn57+Eaj0ny71m")]
+        public string AWSSecretKey {
+            get {
+                return ((string)(this["AWSSecretKey"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("baggio10cod02-22")]
+        public string AssociateTag {
+            get {
+                return ((string)(this["AssociateTag"]));
+            }
+        }
     }
 }

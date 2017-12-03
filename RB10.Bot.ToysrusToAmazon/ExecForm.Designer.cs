@@ -30,9 +30,6 @@
         {
             this.RunButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DelayNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -43,9 +40,18 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.SearchKeywordTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.ProgressLabel = new System.Windows.Forms.Label();
+            this.DeleteLogButton = new System.Windows.Forms.Button();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AmazonNumericUpDown)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // RunButton
@@ -64,48 +70,22 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AllowUserToResizeRows = false;
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column4,
             this.Column2,
             this.Column3});
-            this.dataGridView1.Location = new System.Drawing.Point(2, 76);
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView1.Location = new System.Drawing.Point(0, 44);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
             this.dataGridView1.RowTemplate.Height = 21;
-            this.dataGridView1.Size = new System.Drawing.Size(946, 526);
+            this.dataGridView1.Size = new System.Drawing.Size(945, 480);
             this.dataGridView1.TabIndex = 11;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
-            // 
-            // Column4
-            // 
-            this.Column4.DataPropertyName = "ProcessStatus";
-            this.Column4.HeaderText = "ステータス";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            this.Column4.Width = 150;
-            // 
-            // Column2
-            // 
-            this.Column2.DataPropertyName = "LogDate";
-            this.Column2.HeaderText = "日時";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 150;
-            // 
-            // Column3
-            // 
-            this.Column3.DataPropertyName = "Message";
-            this.Column3.HeaderText = "メッセージ";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Width = 480;
             // 
             // DelayNumericUpDown
             // 
@@ -214,11 +194,79 @@
             this.label5.TabIndex = 2;
             this.label5.Text = "検索条件";
             // 
+            // panel1
+            // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.dataGridView1);
+            this.panel1.Controls.Add(this.panel2);
+            this.panel1.Location = new System.Drawing.Point(2, 77);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(947, 526);
+            this.panel1.TabIndex = 12;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.DeleteLogButton);
+            this.panel2.Controls.Add(this.ProgressLabel);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(945, 44);
+            this.panel2.TabIndex = 12;
+            // 
+            // ProgressLabel
+            // 
+            this.ProgressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProgressLabel.Location = new System.Drawing.Point(787, 8);
+            this.ProgressLabel.Name = "ProgressLabel";
+            this.ProgressLabel.Size = new System.Drawing.Size(149, 28);
+            this.ProgressLabel.TabIndex = 0;
+            this.ProgressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // DeleteLogButton
+            // 
+            this.DeleteLogButton.Location = new System.Drawing.Point(9, 7);
+            this.DeleteLogButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.DeleteLogButton.Name = "DeleteLogButton";
+            this.DeleteLogButton.Size = new System.Drawing.Size(100, 31);
+            this.DeleteLogButton.TabIndex = 11;
+            this.DeleteLogButton.Text = "ログ削除";
+            this.DeleteLogButton.UseVisualStyleBackColor = true;
+            this.DeleteLogButton.Click += new System.EventHandler(this.DeleteLogButton_Click);
+            // 
+            // Column4
+            // 
+            this.Column4.DataPropertyName = "ProcessStatus";
+            this.Column4.HeaderText = "ステータス";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Width = 150;
+            // 
+            // Column2
+            // 
+            this.Column2.DataPropertyName = "LogDate";
+            this.Column2.HeaderText = "日時";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 150;
+            // 
+            // Column3
+            // 
+            this.Column3.DataPropertyName = "Message";
+            this.Column3.HeaderText = "メッセージ";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 600;
+            // 
             // ExecForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(951, 605);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.SearchKeywordTextBox);
             this.Controls.Add(this.comboBox2);
@@ -229,17 +277,19 @@
             this.Controls.Add(this.DelayNumericUpDown);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.RunButton);
             this.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "ExecForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "トイザらス スクレイピング";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ExecForm_FormClosed);
             this.Load += new System.EventHandler(this.ExecForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AmazonNumericUpDown)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -258,10 +308,14 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.TextBox SearchKeywordTextBox;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label ProgressLabel;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button DeleteLogButton;
     }
 }
 
