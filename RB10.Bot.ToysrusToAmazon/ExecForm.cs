@@ -147,7 +147,7 @@ namespace RB10.Bot.ToysrusToAmazon
             var sb = new StringBuilder();
             for (int i = dataGridView1.Rows.Count - 1; i >= 0; i--)
             {
-                sb.AppendLine($"{dataGridView1.Rows[i].Cells[0].Value.ToString()},{dataGridView1.Rows[i].Cells[1].Value.ToString()},{dataGridView1.Rows[i].Cells[2].Value.ToString()}");
+                sb.AppendLine($"{dataGridView1.Rows[i].Cells[0].Value.ToString()},{dataGridView1.Rows[i].Cells[1].Value.ToString()},{dataGridView1.Rows[i].Cells[2].Value.ToString().Replace("\r\n", "@@@")}");
             }
 
             if (System.IO.File.Exists(@"result.txt"))
@@ -171,11 +171,17 @@ namespace RB10.Bot.ToysrusToAmazon
         {
             if (!System.IO.File.Exists(@"result.txt")) return;
 
-            var text = System.IO.File.ReadLines(@"result.txt");
-            foreach (var line in text)
+            try
             {
-                var values = line.Split(',');
-                UpdateLog(values[0], values[1], values[2]);
+                var text = System.IO.File.ReadLines(@"result.txt");
+                foreach (var line in text)
+                {
+                    var values = line.Split(',');
+                    UpdateLog(values[0], values[1], string.Join(",", values.Skip(2)).Replace("@@@", "\r\n"));
+                }
+            }
+            catch (Exception)
+            {
             }
         }
     }

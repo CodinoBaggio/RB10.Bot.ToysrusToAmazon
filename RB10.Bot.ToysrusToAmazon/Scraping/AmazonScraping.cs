@@ -157,7 +157,7 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                         ["Service"] = "AWSECommerceService",
                         ["Operation"] = "ItemSearch",
                         ["SearchIndex"] = "All",
-                        ["ResponseGroup"] = "Medium",
+                        ["ResponseGroup"] = "ItemAttributes,Medium,Offers",
                         ["Keywords"] = keyword
                     };
                     var requestUrl = helper.Sign(request);
@@ -172,8 +172,18 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                     }
                     var item = xml.Descendants(ns + "Item").FirstOrDefault();
                     var asin = item?.Descendants(ns + "ASIN").FirstOrDefault()?.Value;
-                    var offerSummary = item?.Descendants(ns + "OfferSummary").FirstOrDefault();
-                    var price = offerSummary?.Descendants(ns + "LowestNewPrice").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
+
+                    var offerListing = item?.Descendants(ns + "OfferListing").FirstOrDefault();
+                    string price = null;
+                    if(offerListing != null)
+                    {
+                        price = offerListing?.Descendants(ns + "Price").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
+                    }
+                    else
+                    {
+                        var offerSummary = item?.Descendants(ns + "OfferSummary").FirstOrDefault();
+                        price = offerSummary?.Descendants(ns + "LowestNewPrice").FirstOrDefault()?.Descendants(ns + "Amount").FirstOrDefault()?.Value;
+                    }
 
                     var image = xml.Descendants(ns + "LargeImage").FirstOrDefault();
                     var imageUrl = image?.Descendants(ns + "URL").FirstOrDefault()?.Value;
