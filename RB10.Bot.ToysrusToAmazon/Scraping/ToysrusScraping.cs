@@ -36,15 +36,27 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
         private System.Text.RegularExpressions.Regex _toyDetailUrlReg = new System.Text.RegularExpressions.Regex("(?<url>" + System.Text.RegularExpressions.Regex.Escape("href=\"https://www.toysrus.co.jp/s/dsg-") + "[0-9]+)");
         private double _toyCount = 0;
         private double _currentCount = 0;
+        private string _saveFileName;
 
-        public List<ToyInformation> Run(List<string> urls, string searchKeyword)
+        public List<ToyInformation> Run(List<string> urls, string searchKeyword, string saveFileName)
         {
+            // 結果ファイルの準備
+            _saveFileName = saveFileName;
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("トイザらスの商品ページのURL,トイザらスの商品名,トイザらスの税込価格,トイザらスのオンライン在庫,トイザらスの店舗在庫あり,トイザらスの店舗在庫わずか,トイザらスの商品画像URL,Asin,Amazonの税込価格,Amazonの商品画像のURL");
+            System.IO.File.WriteAllText(saveFileName, sb.ToString(), Encoding.GetEncoding("shift-jis"));
+
             // 各カテゴリー内の商品取得
             List<ToyInformation> ret = new List<ToyInformation>();
             foreach (var url in urls)
             {
                 var toyInformations = GetToyCollection(url, searchKeyword);
                 ret.AddRange(toyInformations);
+            }
+
+            if(ret.Count == 0 && System.IO.File.Exists(saveFileName))
+            {
+                System.IO.File.Delete(saveFileName);
             }
 
             return ret;
@@ -140,6 +152,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                         toyInformation.AmazonPrice = amazonToy.price;
                         toyInformation.AmazonImageUrl = amazonToy.imageUrl;
                         ret.Add(toyInformation);
+
+                        WriteResultFile(toyInformation);
                     }
 
                     Notify($"[{toy.ToyName}]の取得を行いました。", NotifyStatus.Information);
@@ -187,6 +201,8 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
                             toyInformation.AmazonPrice = amazonToy.price;
                             toyInformation.AmazonImageUrl = amazonToy.imageUrl;
                             ret.Add(toyInformation);
+
+                            WriteResultFile(toyInformation);
                         }
 
                         Notify($"[{nameElement.InnerHtml}]の取得を行いました。", NotifyStatus.Information);
@@ -305,6 +321,13 @@ namespace RB10.Bot.ToysrusToAmazon.Scraping
             //ret = _startExtraReg.Replace(ret, "");
 
             //return ret;
+        }
+
+        private void WriteResultFile(ToyInformation toyInformation)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"{toyInformation.Url},\"{toyInformation.ToyName}\",{toyInformation.Price},{toyInformation.OnlineStock},{toyInformation.StoreStockCount},{toyInformation.StoreLessStockCount},{toyInformation.ImageUrl},{toyInformation.Asin},{toyInformation.AmazonPrice},{toyInformation.AmazonImageUrl}");
+            System.IO.File.AppendAllText(_saveFileName, sb.ToString(), Encoding.GetEncoding("shift-jis"));
         }
 
         #region トイザらスカテゴリー取得

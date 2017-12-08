@@ -30,6 +30,9 @@
         {
             this.RunButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DelayNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -43,10 +46,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.ProgressLabel = new System.Windows.Forms.Label();
-            this.DeleteLogButton = new System.Windows.Forms.Button();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AmazonNumericUpDown)).BeginInit();
@@ -86,6 +85,30 @@
             this.dataGridView1.Size = new System.Drawing.Size(945, 480);
             this.dataGridView1.TabIndex = 11;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
+            // 
+            // Column4
+            // 
+            this.Column4.DataPropertyName = "ProcessStatus";
+            this.Column4.HeaderText = "ステータス";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Width = 150;
+            // 
+            // Column2
+            // 
+            this.Column2.DataPropertyName = "LogDate";
+            this.Column2.HeaderText = "日時";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 150;
+            // 
+            // Column3
+            // 
+            this.Column3.DataPropertyName = "Message";
+            this.Column3.HeaderText = "メッセージ";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 600;
             // 
             // DelayNumericUpDown
             // 
@@ -209,7 +232,6 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.DeleteLogButton);
             this.panel2.Controls.Add(this.ProgressLabel);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
@@ -225,41 +247,6 @@
             this.ProgressLabel.Size = new System.Drawing.Size(149, 28);
             this.ProgressLabel.TabIndex = 0;
             this.ProgressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // DeleteLogButton
-            // 
-            this.DeleteLogButton.Location = new System.Drawing.Point(9, 7);
-            this.DeleteLogButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.DeleteLogButton.Name = "DeleteLogButton";
-            this.DeleteLogButton.Size = new System.Drawing.Size(100, 31);
-            this.DeleteLogButton.TabIndex = 11;
-            this.DeleteLogButton.Text = "ログ削除";
-            this.DeleteLogButton.UseVisualStyleBackColor = true;
-            this.DeleteLogButton.Click += new System.EventHandler(this.DeleteLogButton_Click);
-            // 
-            // Column4
-            // 
-            this.Column4.DataPropertyName = "ProcessStatus";
-            this.Column4.HeaderText = "ステータス";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            this.Column4.Width = 150;
-            // 
-            // Column2
-            // 
-            this.Column2.DataPropertyName = "LogDate";
-            this.Column2.HeaderText = "日時";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 150;
-            // 
-            // Column3
-            // 
-            this.Column3.DataPropertyName = "Message";
-            this.Column3.HeaderText = "メッセージ";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Width = 600;
             // 
             // ExecForm
             // 
@@ -283,7 +270,6 @@
             this.Name = "ExecForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "トイザらス スクレイピング";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ExecForm_FormClosed);
             this.Load += new System.EventHandler(this.ExecForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayNumericUpDown)).EndInit();
@@ -315,7 +301,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.Button DeleteLogButton;
     }
 }
 

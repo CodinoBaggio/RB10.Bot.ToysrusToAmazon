@@ -38,8 +38,6 @@ namespace RB10.Bot.ToysrusToAmazon
 
             comboBox1.DataSource = Scraping.ToysrusScraping.GetCategories();
             comboBox1.DisplayMember = "StoreName";
-
-            LoadLog();
         }
 
         private void RunButton_Click(object sender, EventArgs e)
@@ -56,7 +54,6 @@ namespace RB10.Bot.ToysrusToAmazon
                 if (dlg.ShowDialog() == DialogResult.Cancel) return;
 
                 dataGridView1.Rows.Clear();
-                DeleteLogButton.Enabled = false;
 
                 var parameters = new Scraping.ScrapingManager.Parameters
                 {
@@ -79,10 +76,6 @@ namespace RB10.Bot.ToysrusToAmazon
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                DeleteLogButton.Enabled = true;
             }
         }
 
@@ -140,49 +133,6 @@ namespace RB10.Bot.ToysrusToAmazon
         {
             comboBox2.DataSource = (comboBox1.SelectedValue as Scraping.ToysrusScraping.Store).Categories;
             comboBox2.DisplayMember = "CategoryName";
-        }
-
-        private void ExecForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            var sb = new StringBuilder();
-            for (int i = dataGridView1.Rows.Count - 1; i >= 0; i--)
-            {
-                sb.AppendLine($"{dataGridView1.Rows[i].Cells[0].Value.ToString()},{dataGridView1.Rows[i].Cells[1].Value.ToString()},{dataGridView1.Rows[i].Cells[2].Value.ToString().Replace("\r\n", "@@@")}");
-            }
-
-            if (System.IO.File.Exists(@"result.txt"))
-            {
-                System.IO.File.Delete(@"result.txt");
-            }
-
-            System.IO.File.WriteAllText(@"result.txt", sb.ToString());
-        }
-
-        private void DeleteLogButton_Click(object sender, EventArgs e)
-        {
-            if (System.IO.File.Exists(@"result.txt"))
-            {
-                System.IO.File.Delete(@"result.txt");
-            }
-            dataGridView1.Rows.Clear();
-        }
-
-        private void LoadLog()
-        {
-            if (!System.IO.File.Exists(@"result.txt")) return;
-
-            try
-            {
-                var text = System.IO.File.ReadLines(@"result.txt");
-                foreach (var line in text)
-                {
-                    var values = line.Split(',');
-                    UpdateLog(values[0], values[1], string.Join(",", values.Skip(2)).Replace("@@@", "\r\n"));
-                }
-            }
-            catch (Exception)
-            {
-            }
         }
     }
 }
